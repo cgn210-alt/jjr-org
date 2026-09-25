@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 중종로공동체 다락방별 명단</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #f0f2f5;
+      color: #1a1a1a;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ── 헤더 ── */
+    header {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8e 100%);
+      color: white;
+      padding: 18px 24px 16px;
+    }
+    .header-inner { max-width: 1100px; margin: 0 auto; }
+    header a { color: #93c5fd; text-decoration: none; font-size: 12px; }
+    header a:hover { text-decoration: underline; }
+    header h1 { font-size: 22px; font-weight: 900; margin-top: 4px; }
+    header .subtitle { font-size: 12px; color: #bfdbfe; margin-top: 2px; }
+
+    /* ── 전체 현황 카드 ── */
+    .summary-bar {
+      max-width: 1100px;
+      margin: 16px auto 0;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    /* 1단: 총인원 */
+    .summary-card.total {
+      background: white;
+      border-radius: 10px;
+      padding: 14px 18px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    /* 2단: 3개 다락방 */
+    .summary-row3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .summary-card {
+      background: white;
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .summary-card .num { font-size: 26px; font-weight: 900; }
+    .summary-card .label { font-size: 11px; color: #888; margin-top: 2px; }
+    .summary-card.total .num { font-size: 32px; color: #1e3a5f; }
+    .summary-card.total .label { font-size: 12px; }
+    .summary-card.faith  .num { color: #7c3aed; }
+    .summary-card.hope   .num { color: #1d4ed8; }
+    .summary-card.love   .num { color: #be185d; }
+
+    /* ── 본문 ── */
+    .container { max-width: 1100px; margin: 20px auto 40px; padding: 0 16px; }
+
+    /* ── 다락방 블록 ── */
+    .darakbang-block { margin-bottom: 28px; }
+    .darakbang-title {
+      font-size: 16px;
+      font-weight: 900;
+      padding: 10px 16px;
+      border-radius: 8px 8px 0 0;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .darakbang-title .count-badge {
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.25);
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+    .faith-bg  { background: linear-gradient(90deg, #6d28d9, #7c3aed); }
+    .hope-bg   { background: linear-gradient(90deg, #1e40af, #1d4ed8); }
+    .love-bg   { background: linear-gradient(90deg, #9d174d, #be185d); }
+
+    /* 서브 다락방 (믿음1/믿음2 등) */
+    .sub-block {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-top: none;
+      margin-bottom: 2px;
+    }
+    .sub-block:last-child { border-radius: 0 0 8px 8px; }
+
+    .sub-header {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .sub-header.faith-sub { background: #ede9fe; color: #5b21b6; border-left: 4px solid #7c3aed; }
+    .sub-header.hope-sub  { background: #dbeafe; color: #1e40af; border-left: 4px solid #1d4ed8; }
+    .sub-header.love-sub  { background: #fce7f3; color: #9d174d; border-left: 4px solid #be185d; }
+    .sub-header .leader-tag {
+      font-size: 11px;
+      font-weight: 500;
+      color: #666;
+    }
+
+    /* 순 테이블 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead tr { background: #f9fafb; }
+    th {
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #888;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+    th:nth-child(1) { width: 36px; text-align: center; }
+    th:nth-child(2) { width: 40px; text-align: center; }
+    td {
+      padding: 7px 10px;
+      font-size: 12px;
+      border-bottom: 1px solid #f3f4f6;
+      vertical-align: top;
+      word-break: keep-all;
+      line-height: 1.8;
+    }
+    tr:last-child td { border-bottom: none; }
+    td:nth-child(1) { text-align: center; color: #aaa; font-size: 11px; white-space: nowrap; }
+    td:nth-child(2) { text-align: center; font-weight: 700; white-space: nowrap; }
+    td:nth-child(3) { white-space: nowrap; }
+
+    /* 모바일: 가로 스크롤 */
+    .sub-block { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { min-width: 520px; }
+
+    .순장 { font-weight: 700; color: #1e40af; }
+    .순장 .leader-name { color: #1e40af; font-weight: 700; }
+    .순장 .spouse-name { color: #111; font-weight: 500; }
+    .명단 { color: #374151; }
+    .pair { display: inline-block; margin-right: 6px; }
+    .temp { color: #f59e0b; font-size: 11px; }
+
+    /* 범례 */
+    .legend {
+      font-size: 11px;
+      color: #888;
+      padding: 8px 16px;
+      background: #f9fafb;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 11px;
+      color: #bbb;
+    }
+
+    @media (max-width: 600px) {
+      .summary-bar { gap: 8px; }
+      .summary-card.total .num { font-size: 26px; }
+      .summary-card { padding: 10px 6px; }
+      .summary-card .num { font-size: 18px; }
+      .summary-card .label { font-size: 10px; }
+      .container { padding: 0 8px; }
+    }
+  </style>
+  <script src="./community-totals.js?v=20260625"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="https://cgn210-alt.github.io/jjr-jonggangye-2026/">← 중종로공동체 홈으로</a>
+    <h1>중종로공동체 다락방별 명단</h1>
+    <div class="subtitle">총무 주웅현 · 최종수정 2026.06.13</div>
+  </div>
+</header>
+
+<!-- 전체 현황 -->
+<div class="summary-bar">
+  <!-- 1단: 총인원 -->
+  <div class="summary-card total">
+    <div class="num" data-ct-members="ALL">318명</div>
+    <div class="label">총 인원 · <span data-ct-sun="ALL">34개 순</span></div>
+  </div>
+  <!-- 2단: 다락방별 -->
+  <div class="summary-row3">
+    <div class="summary-card faith">
+      <div class="num" data-ct-members="GROUP:믿음">109명</div>
+      <div class="label">믿음 다락방 (<span data-ct-sun="GROUP:믿음">12개 순</span>)</div>
+    </div>
+    <div class="summary-card hope">
+      <div class="num" data-ct-members="GROUP:소망">55명</div>
+      <div class="label">소망 다락방 (<span data-ct-sun="GROUP:소망">7개 순</span>)</div>
+    </div>
+    <div class="summary-card love">
+      <div class="num" data-ct-members="GROUP:사랑">153명</div>
+      <div class="label">사랑 다락방 (<span data-ct-sun="GROUP:사랑">15개 순</span>)</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ════════════ 담당목사 ════════════ -->
+  <div class="darakbang-block">
+    <div class="darakbang-title" style="background:linear-gradient(90deg,#1e3a5f,#2d5a8e);">
+      담당목사
+    </div>
+    <div class="sub-block" style="border-radius:0 0 8px 8px;">
+      <table>
+        <thead>
+          <tr><th>직분</th><th>이름</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="순장">담당목사</td>
+            <td class="명단">노치형</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════════════ 믿음 다락방 ════════════ -->
+  <div class="darakbang-block">
+    <div class="legend" style="border-top:none;border-bottom:1px solid #e5e7eb;">* 적색 표기: 새가족 순배정 &nbsp;·&nbsp; 자색 표기: 최근 재배정</div>
+    <div class="darakbang-title faith-bg">
+      믿음 다락방
+      <span class="count-badge"><span data-ct-members="GROUP:믿음">109명</span> · <span data-ct-sun="GROUP:믿음">12개 순</span></span>
+    </div>
+
+    <!-- 믿음1 -->
+    <div class="sub-block">
+      <div class="sub-header faith-sub">
+        믿음1다락방 <span class="count-badge" style="background:#ddd5fe;color:#5b21b6;padding:1px 8px;border-radius:20px;font-size:11px;"><span data-ct-members="믿음1">61명</span> · <span data-ct-sun="믿음1">6개 순</span></span>
+        <span class="leader-tag">다락방장 김현식</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>순</th><th>인원</th><th>순장</th><th>순원</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td><td>12</td>
+            <td class="순장">김의래, 김성희</td>
+            <td class="명단">김기수, 이정숙 / 이우형, 김세경 / 정문규, 이희영 / 황광석, 박혜선 / 박병익, 전정희</td>
+          </tr>
+          <tr>
+            <td>2</td><td>16</td>
+            <td class="순장">주웅현, 서정숙</td>
+            <td class="명단">김재범, 이수정 / 박흥서, 송경옥 / 윤민학, 강성희 / 전해정 / 홍장기, 안희정 / 이혜진 / 신경재, 김영옥 / 이승현, 차현아</td>
+          </tr>
+          <tr>
+            <td>3</td><td>16</td>
+            <td class="순장">김현식, 복유선</td>
+            <td class="명단">김미선 / 문동곤, 전명주 / 박돈규, 주수경 / 오명, 황명호 / 윤영철, 임애규 / 함공식, 김태선 / 하송우, 김성옥 / 홍종선</td>
+          </tr>
+          <tr>
+            <td>4</td><td>3</td>
+            <td class="순장">정순영</td>
+            <td class="명단">윤숙미 / 정경희</td>
+          </tr>
+          <tr>
+            <td>5</td><td>7</td>
+            <td class="순장">정두식, 이영미</td>
+            <td class="명단">윤용헌 / 유서진, 박지희 / 조현래, 최정인</td>
+          </tr>
+          <tr>
+            <td>6</td><td>7</td>
+            <td class="순장">황한나</td>
+            <td class="명단">김미향 / 장선미 / 박선주 / 정유진 / 이언옥 / 김정</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 믿음2 -->
+    <div class="sub-block">
+      <div class="sub-header faith-sub">
+        믿음2다락방 <span class="count-badge" style="background:#ddd5fe;color:#5b21b6;padding:1px 8px;border-radius:20px;font-size:11px;"><span data-ct-members="믿음2">48명</span> · <span data-ct-sun="믿음2">6개 순</span></span>
+        <span class="leader-tag">다락방장 엄재준</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>순</th><th>인원</th><th>순장</th><th>순원</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>8</td><td>8</td>
+            <td class="순장">조재관, 김문경</td>
+            <td class="명단">김요섭, 이한나 / 박승관, 박경은 / 엄재준, 고봉옥</td>
+          </tr>
+          <tr>
+            <td>9</td><td>6</td>
+            <td class="순장">이금자</td>
+            <td class="명단">김연숙 / 김한순 / 정문희 / 윤강선 / 추옥선</td>
+          </tr>
+          <tr>
+            <td>10</td><td>5</td>
+            <td class="순장">송영이</td>
+            <td class="명단">이소연 / 이정은 / 채연 / 조차연</td>
+          </tr>
+          <tr>
+            <td>11</td><td>10</td>
+            <td class="순장">이성진, 김혜진</td>
+            <td class="명단">고석봉, 최희정 / 김진규, 박현지 / 박경준, 예소라 / 정진만, 김진유</td>
+          </tr>
+          <tr>
+            <td>12</td><td>13</td>
+            <td class="순장">이창권, 이임순</td>
+            <td class="명단">박선영 / 심춘보, 김영희 / 이상도 / 이재호, 이성혜 / 장은자 / 조명자 / 홍정표, 홍숙경 / <span class="temp">송동억(임시)</span></td>
+          </tr>
+          <tr>
+            <td>13</td><td>6</td>
+            <td class="순장">김영미</td>
+            <td class="명단">김주성 / 신은혜 / 이선정 / 이승은 / 최지원</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════════════ 소망 다락방 ════════════ -->
+  <div class="darakbang-block">
+    <div class="darakbang-title hope-bg">
+      소망 다락방
+      <span class="count-badge"><span data-ct-members="GROUP:소망">55명</span> · <span data-ct-sun="GROUP:소망">7개 순</span></span>
+    </div>
+
+    <!-- 소망1 -->
+    <div class="sub-block">
+      <div class="sub-header hope-sub">
+        소망1다락방 <span class="count-badge" style="background:#bfdbfe;color:#1e40af;padding:1px 8px;border-radius:20px;font-size:11px;"><span data-ct-members="소망1">33명</span> · <span data-ct-sun="소망1">4개 순</span></span>
+        <span class="leader-tag">다락방장 홍진섭</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>순</th><th>인원</th><th>순장</th><th>순원</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td><td>18</td>
+            <td class="순장">박제한, 김윤미</td>
+            <td class="명단">김진철, 강화영 / 이현성, 김선영 / 이현철, 김윤영 / 정태옥 / 홍진섭 / 허효창 / 지형근, 이지연 / 이준혁, 고민화 / 정주형 / 고형민, 허미호</td>
+          </tr>
+          <tr>
+            <td>2</td><td>3</td>
+            <td class="순장">강행자</td>
+            <td class="명단">장청자 / 한정순</td>
+          </tr>
+          <tr>
+            <td>3</td><td>5</td>
+            <td class="순장">이명선</td>
+            <td class="명단">김태희 / 조경애 / 김경희 / 이은경</td>
+          </tr>
+          <tr>
+            <td>4</td><td>7</td>
+            <td class="순장">이강남</td>
+            <td class="명단">강유미 / 김영현 / 백남숙 / 정선희 / 최춘자 / 황혜자</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 소망2 -->
+    <div class="sub-block">
+      <div class="sub-header hope-sub">
+        소망2다락방 <span class="count-badge" style="background:#bfdbfe;color:#1e40af;padding:1px 8px;border-radius:20px;font-size:11px;"><span data-ct-members="소망2">22명</span> · <span data-ct-sun="소망2">3개 순</span></span>
+        <span class="leader-tag">다락방장 남관우</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>순</th><th>인원</th><th>순장</th><th>순원</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>8</td><td>10</td>
+            <td class="순장">남관우, 구자영</td>
+            <td class="명단">김희정 / 이세종 / 이창배 / 정찬의, 장해영 / 이홍언 / 서인호, 이순희</td>
+          </tr>
+          <tr>
+            <td>9</td><td>4</td>
+            <td class="순장">최인경</td>
+            <td class="명단">정세정 / 지은실 / 허은</td>
+          </tr>
+          <tr>
+            <td>10</td><td>8</td>
+            <td class="순장">허은진</td>
+            <td class="명단">강미란 / 김양선 / 김지은 / 박주연 / 신주현 / 이소영 / 진선희</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════════════ 사랑 다락방 ════════════ -->
+  <div class="darakbang-block">
+    <div class="darakbang-title love-bg">
+      사랑 다락방
+      <span class="count-badge"><span data-ct-members="GROUP:사랑">153명</span> · <span data-ct-sun="GROUP:사랑">15개 순</span></span>
+    </div>
+
+    <!-- 사랑1 -->
+    <div class="sub-block">
+      <div class="sub-header love-sub">
+        사랑1다락방 <span class="count-badge" style="background:#fbcfe8;color:#9d174d;padding:1px 8px;border-radius:20px;font-size:11px;"><span data-ct-members="사랑1">73명</span> · <span data-ct-sun="사랑1">7개 순</span></span>
+        <span class="leader-tag">다락방장 김성현</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>순</th><th>인원</th><th>순장</th><th>순원</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td><td>14</td>
+            <td class="순장">김성현, 전성심</td>
+            <td class="명단">정영철, 변효진 / 조득용, 조영선 / 최수호, 강금순 / 최재권, 박은규 / 구준회, 조소연 / 김학식, 이아영</td>
+          </tr>
+          <tr>
+            <td>2</td><td>11</td>
+            <td class="순장">고주식, 윤수란</td>
+            <td class="명단">이성우, 이은경 / 한규진, 임동욱 / 권혁준, 박민예 / 전은미 / 박윤성, 김주희</td>
+          </tr>
+          <tr>
+            <td>3</td><td>11</td>
+            <td class="순장">유덕영, 정현지</td>
+            <td class="명단">김효진, 김선경 / 윤태석, 김복희 / 이창복 / 이상문, 이정숙 / 이재원, 권혜영</td>
+          </tr>
+          <tr>
+            <td>4</td><td>8</td>
+            <td class="순장">이숙인</td>
+            <td class="명단">오기화 / 이금순 / 이명희 / 이복동 / 이영숙 / 황재임 / 김복희</td>
+          </tr>
+          <tr>
+            <td>5</td><td>5</td>
+            <td class="순장">—</td>
+            <td class="명단">강정수 / 안진아 / 김홍란 / 김효정 / 정현옥</td>
+          </tr>
+          <tr>
+            <td>6</td><td>15</td>
+            <td class="순장">강은주</td>
+            <td class="명단">문은영 / 강진일 / 김송희 / 김향아 / 박윤희 / 손혜정 / 최미란 / 이경미 / 임명숙 / 최다예 / 김의정 / 오보환 / 권은경 / 김희준</td>
+          </tr>
+          <tr>
+            <td>7</td><td>9</td>
+            <td class="순장">송정미</td>
+            <td class="명단">오경숙 / 김수옥 / 김지연 / 장윤지 / 배은하 / 박성예 / 임소이 / 변지숙</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 사랑2 -->
+    <div class="sub-block">
+      <div class="sub-header love-sub">
+        사랑2다락방 <span class="count-badge" style="background:#fbcfe8;color:#9d174d;padding:1px 8px;border-radius:20px;font-size:11px;"><span data-ct-members="사랑2">80명</span> · <span data-ct-sun="사랑2">8개 순</span></span>
+        <span class="leader-tag">다락방장 김진국</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>순</th><th>인원</th><th>순장</th><th>순원</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>8</td><td>14</td>
+            <td class="순장">이성한, 이선화</td>
+            <td class="명단">강병철, 홍지윤 / 김진국, 김정현 / 배석원, 강혜진 / 이보윤, 안은주 / 정주호, 이효진 / 심승보, 김현진</td>
+          </tr>
+          <tr>
+            <td>9</td><td>8</td>
+            <td class="순장">안승립, 구혜정</td>
+            <td class="명단">이요섭, 변은미 / 박성호, 이희자 / 이용구, 김남정</td>
+          </tr>
+          <tr>
+            <td>10</td><td>8</td>
+            <td class="순장">이영욱</td>
+            <td class="명단">김길자 / 김영희 / 방통일 / 서정애 / 정광자 / 홍규숙 / 김민경</td>
+          </tr>
+          <tr>
+            <td>11</td><td>10</td>
+            <td class="순장">최황, 오영미</td>
+            <td class="명단">류성민 / 문요환, 고은하 / 우인숙 / 유정희, 이성희 / 이창환, 김경희</td>
+          </tr>
+          <tr>
+            <td>12</td><td>9</td>
+            <td class="순장">박지수, 이지영</td>
+            <td class="명단">허만, 김미옥 / 이재형, 유재연 / 호종일, 정은주 / 박영아</td>
+          </tr>
+          <tr>
+            <td>13</td><td>11</td>
+            <td class="순장">김종중, 정영혜</td>
+            <td class="명단">권오성, 최혜연 / 박정현, 이정림 / 이인용, 장경희 / 남궁호연 / 김성주, 정재은</td>
+          </tr>
+          <tr>
+            <td>14</td><td>12</td>
+            <td class="순장">정충균, 이종선</td>
+            <td class="명단">권순동, 박민주 / 은재승, 이보라 / 이영규, 박소연 / 홍성철, 황유정 / 황성현, 진혜영</td>
+          </tr>
+          <tr>
+            <td>15</td><td>8</td>
+            <td class="순장">이연주</td>
+            <td class="명단">고혜순 / 권보민 / 이진주 / 정기순 / 김순임 / 전명숙 / 박애우</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>중종로공동체 총무 주웅현 · 최종수정 20260613</footer>
+
+<script>
+/* 순장 셀: 첫 이름(순장)만 청색, 함께 적힌 이름(아내)은 블랙 처리 */
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('td.순장').forEach(function (td) {
+    var raw = td.textContent.trim();
+    if (!raw || raw === '—') return;
+    var parts = raw.split(',');
+    var leader = parts.shift().trim();
+    var spouse = parts.join(',').trim();
+    td.innerHTML =
+      '<span class="leader-name">' + leader + '</span>' +
+      (spouse ? '<span class="spouse-name">, ' + spouse + '</span>' : '');
+  });
+});
+</script>
+
+</body>
+</html>

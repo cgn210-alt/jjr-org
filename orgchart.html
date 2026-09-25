@@ -35,24 +35,6 @@
       padding-left: 10px; margin: 20px 0 10px;
     }
 
-    /* ── 통계 ── */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px; margin-bottom: 4px;
-    }
-    .stat {
-      background: white; border-radius: 10px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      padding: 12px 8px; text-align: center;
-    }
-    .stat .n { font-size: 20px; font-weight: 900; }
-    .stat .l { font-size: 10px; color: #888; margin-top: 2px; line-height: 1.4; }
-    .stat.t .n { color: #1e3a5f; }
-    .stat.f .n { color: #7c3aed; }
-    .stat.h .n { color: #1d4ed8; }
-    .stat.v .n { color: #be185d; }
-
     /* ── 리더십 ── */
     .ldrs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }
     .ldr {
@@ -66,7 +48,6 @@
     .ldr.admin  { border-left: 5px solid #9b2226; }
     .ldr-role { font-size: 11px; font-weight: 700; color: #888; min-width: 70px; }
     .ldr-name { font-size: 17px; font-weight: 900; }
-    .ldr-sub  { font-size: 12px; color: #666; margin-top: 2px; }
     .ldr-divider {
       margin-left: 16px; padding-left: 16px;
       border-left: 1px solid #eee;
@@ -84,7 +65,6 @@
       margin-bottom: 14px;
     }
 
-    /* 다락방 대제목 */
     .db-hd {
       padding: 11px 16px;
       font-size: 16px; font-weight: 900; color: white;
@@ -99,29 +79,14 @@
       padding: 2px 9px; border-radius: 20px;
     }
 
-    /* 서브 다락방 영역 */
     .db-body { padding: 12px 14px; }
 
-    /* 서브 타이틀 */
-    .sub-hd {
-      padding: 8px 12px; border-radius: 6px; margin-bottom: 8px;
-    }
-    .sub-hd { background: #f8f9fb; border: 1px solid #e5e7eb; }
-    .sub-hd-top {
-      display: flex; align-items: center; justify-content: space-between; gap: 6px;
-    }
-    .sub-hd .sub-name {
-      font-size: 15px; font-weight: 900; color: #1a1a1a;
-    }
-    .sub-hd .sub-cnt {
-      font-size: 11px; color: #888; white-space: nowrap;
-    }
-    .sub-hd .sub-ldr {
-      font-size: 11px; font-weight: 600; color: #666;
-      margin-top: 4px;
-    }
+    .sub-hd { padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; background: #f8f9fb; border: 1px solid #e5e7eb; }
+    .sub-hd-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .sub-hd .sub-name { font-size: 15px; font-weight: 900; color: #1a1a1a; }
+    .sub-hd .sub-cnt { font-size: 11px; color: #888; white-space: nowrap; }
+    .sub-hd .sub-ldr { font-size: 11px; font-weight: 600; color: #666; margin-top: 4px; }
 
-    /* 순 목록 */
     .sun-list {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -138,18 +103,9 @@
       padding: 8px 10px;
     }
     .sun-row.empty { opacity: 0.35; }
-    .sun-num {
-      font-size: 10px; font-weight: 700; color: #bbb;
-      white-space: nowrap; min-width: 22px; flex-shrink: 0; order: 0;
-    }
-    .sun-nm {
-      font-size: 14px; font-weight: 900; color: #111;
-      white-space: nowrap; flex-shrink: 0; order: 1;
-    }
-    .sun-role-tag {
-      font-size: 10px; color: #999;
-      white-space: nowrap; flex-shrink: 0; order: 2;
-    }
+    .sun-num { font-size: 10px; font-weight: 700; color: #bbb; white-space: nowrap; min-width: 22px; flex-shrink: 0; order: 0; }
+    .sun-nm { font-size: 14px; font-weight: 900; color: #111; white-space: nowrap; flex-shrink: 0; order: 1; }
+    .sun-role-tag { font-size: 10px; color: #999; white-space: nowrap; flex-shrink: 0; order: 2; }
     .sun-badge {
       font-size: 9px; font-weight: 700; color: white;
       background: #9ca3af; padding: 1px 4px;
@@ -159,79 +115,38 @@
 
     /* ── 장로 ── */
     .elder-group { margin-bottom: 10px; }
-    .elder-gh {
-      padding: 8px 14px;
-      font-size: 12px; font-weight: 700; color: white;
-      border-radius: 7px 7px 0 0;
-    }
-    .elder-gh.simu  { background: #1e3a5f; }
-    .elder-gh.sayk  { background: #4a5568; }
+    .elder-gh { padding: 8px 14px; font-size: 12px; font-weight: 700; color: white; border-radius: 7px 7px 0 0; }
+    .elder-gh.simu { background: #1e3a5f; }
+    .elder-gh.sayk { background: #4a5568; }
     .elder-gb {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 6px;
-      padding: 10px;
-      background: #f3f5f8;
-      border: 1px solid #dde2e8;
-      border-top: none;
+      gap: 6px; padding: 10px;
+      background: #f3f5f8; border: 1px solid #dde2e8; border-top: none;
       border-radius: 0 0 7px 7px;
     }
-    .elder-card {
-      background: white; border-radius: 7px;
-      padding: 9px 10px; text-align: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
+    .elder-card { background: white; border-radius: 7px; padding: 9px 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
     .e-role { font-size: 9px; font-weight: 700; color: #999; }
     .e-name { font-size: 14px; font-weight: 900; margin-top: 2px; white-space: nowrap; }
 
     /* ── 사역 담당 ── */
-    .ministry-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 8px; margin-bottom: 4px;
-    }
-    .mc {
-      background: white; border-radius: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-      padding: 11px 13px;
-      border-top: 3px solid #1e3a5f;
-    }
+    .ministry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-bottom: 4px; }
+    .mc { background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); padding: 11px 13px; border-top: 3px solid #1e3a5f; }
     .mc .mt { font-size: 10px; font-weight: 700; color: #888; margin-bottom: 4px; }
     .mc .mn { font-size: 13px; font-weight: 700; color: #111; line-height: 1.6; }
 
     /* ── 후원선교사 ── */
-    .mission-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 8px;
-    }
-    .msc {
-      background: white; border-radius: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-      padding: 12px 14px;
-      border-top: 3px solid #f59e0b;
-    }
+    .mission-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+    .msc { background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); padding: 12px 14px; border-top: 3px solid #f59e0b; }
     .msc .mr { font-size: 10px; font-weight: 700; color: #d97706; margin-bottom: 4px; }
     .msc .mn { font-size: 15px; font-weight: 900; }
     .msc .ms { font-size: 11px; color: #888; margin-top: 4px; }
 
-    /* 선교사별 기도제목 입력 */
     .ms-pray { margin-top: 10px; border-top: 1px dashed #f0d9b0; padding-top: 8px; }
-    .ms-pray-head {
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 10px; font-weight: 700; color: #d97706; margin-bottom: 4px;
-    }
-    .ms-pray-btn {
-      font-size: 10px; font-weight: 700; color: #b45309;
-      background: #fff7ed; border: 1px solid #fcd9a8;
-      border-radius: 6px; padding: 2px 8px; cursor: pointer;
-      font-family: inherit;
-    }
+    .ms-pray-head { display: flex; align-items: center; justify-content: space-between; font-size: 10px; font-weight: 700; color: #d97706; margin-bottom: 4px; }
+    .ms-pray-btn { font-size: 10px; font-weight: 700; color: #b45309; background: #fff7ed; border: 1px solid #fcd9a8; border-radius: 6px; padding: 2px 8px; cursor: pointer; font-family: inherit; }
     .ms-pray-btn:hover { background: #ffedd5; }
-    .ms-pray-text {
-      font-size: 12px; color: #444; line-height: 1.6;
-      white-space: pre-wrap; word-break: break-word;
-    }
+    .ms-pray-text { font-size: 12px; color: #444; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
     .ms-pray-text.empty { color: #bbb; font-style: italic; }
     .ms-pray-edit textarea {
       width: 100%; min-height: 70px; resize: vertical;
@@ -241,46 +156,33 @@
     }
     .ms-pray-edit textarea:focus { border-color: #f59e0b; }
     .ms-pray-actions { display: flex; gap: 6px; margin-top: 6px; }
-    .ms-pray-save, .ms-pray-cancel {
-      font-size: 11px; font-weight: 700; border-radius: 6px;
-      padding: 4px 10px; cursor: pointer; font-family: inherit;
-    }
+    .ms-pray-save, .ms-pray-cancel { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; }
     .ms-pray-save { background: #f59e0b; color: white; border: none; }
     .ms-pray-cancel { background: white; color: #888; border: 1px solid #ddd; }
 
     footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 
-    /* ── 모바일 보정 ── */
     @media (max-width: 600px) {
       .stats { grid-template-columns: repeat(2, 1fr); }
-      .stat .n { font-size: 18px; }
-      /* 순 목록: 모바일에서 2열 */
       .sun-list { grid-template-columns: repeat(2, 1fr); gap: 5px; }
       .sun-nm { font-size: 13px; }
       .sun-role-tag { display: none; }
-      /* 리더십 총무 카드 */
       .ldr { flex-wrap: wrap; }
-      .ldr-divider {
-        border-left: none; border-top: 1px solid #eee;
-        margin: 6px 0 0; padding: 6px 0 0;
-        margin-left: 0; padding-left: 0; width: 100%;
-      }
-      /* 장로 */
+      .ldr-divider { border-left: none; border-top: 1px solid #eee; margin: 6px 0 0; padding: 6px 0 0; margin-left: 0; padding-left: 0; width: 100%; }
       .elder-gb { grid-template-columns: repeat(3, 1fr); }
-      /* 사역담당 */
       .ministry-grid { grid-template-columns: repeat(2, 1fr); }
-      /* 후원선교사 */
       .mission-grid { grid-template-columns: 1fr; }
     }
   </style>
   <script src="./community-totals.js?v=20260625"></script>
+  <script src="./org-data-default.js"></script>
 </head>
 <body>
 
 <header>
   <a href="https://cgn210-alt.github.io/jjr-jonggangye-2026/">← 중종로공동체 홈으로</a>
   <h1>2026년 중종로공동체 조직도</h1>
-  <div class="subtitle">총무 주웅현 개정 20260613</div>
+  <div class="subtitle" id="headerSub">총무 주웅현 개정 20260613</div>
 </header>
 
 <div class="wrap">
@@ -309,234 +211,110 @@
     </div>
   </div>
 
-  <!-- 리더십 -->
-  <div class="sec-title">리더십</div>
-  <div class="ldrs">
-    <div class="ldr pastor">
-      <div class="ldr-role">담당목사</div>
-      <div><div class="ldr-name">노치형</div></div>
-    </div>
-    <div class="arrow">↓</div>
-    <div class="ldr elder">
-      <div class="ldr-role">대표장로</div>
-      <div><div class="ldr-name">오명</div></div>
-    </div>
-    <div class="arrow">↓</div>
-    <div class="ldr admin">
-      <div class="ldr-role">총무</div>
-      <div>
-        <div class="ldr-name">주웅현 안수집사</div>
-      </div>
-      <div class="ldr-divider">
-        <div style="font-size:10px;color:#888;font-weight:700;">부총무</div>
-        <div style="font-size:14px;font-weight:700;">조재관 안수집사</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ════ 믿음 다락방 ════ -->
-  <div class="sec-title">다락방 구조</div>
-
-  <div class="db-block">
-    <div class="db-hd faith">믿음 다락방 <span class="db-cnt"><span data-ct-members="GROUP:믿음">109명</span> · <span data-ct-sun="GROUP:믿음">12개 순</span></span></div>
-    <div class="db-body">
-
-      <div class="sub-hd faith">
-        <div class="sub-hd-top"><span class="sub-name">믿음1다락방</span><span class="sub-cnt"><span data-ct-members="믿음1">61명</span> · <span data-ct-sun="믿음1">6개 순</span></span></div>
-        <div class="sub-ldr">다락방장 김현식 안수집사</div>
-      </div>
-      <div class="sun-list">
-        <div class="sun-row"><span class="sun-num">01</span><span class="sun-nm">김의래</span><span class="sun-badge">순장</span><span class="sun-role-tag">장로</span></div>
-        <div class="sun-row"><span class="sun-num">02</span><span class="sun-nm">주웅현</span><span class="sun-badge">순장</span><span class="sun-role-tag">안수집사</span></div>
-        <div class="sun-row"><span class="sun-num">03</span><span class="sun-nm">김현식</span><span class="sun-badge">순장</span><span class="sun-role-tag">안수집사</span></div>
-        <div class="sun-row"><span class="sun-num">04</span><span class="sun-nm">정순영</span><span class="sun-badge">순장</span><span class="sun-role-tag">권사</span></div>
-        <div class="sun-row"><span class="sun-num">05</span><span class="sun-nm">정두식</span><span class="sun-badge">순장</span></div>
-        <div class="sun-row"><span class="sun-num">06</span><span class="sun-nm">황한나</span><span class="sun-badge">순장</span><span class="sun-role-tag">권사</span></div>
-      </div>
-
-      <div class="sub-hd faith">
-        <div class="sub-hd-top"><span class="sub-name">믿음2다락방</span><span class="sub-cnt"><span data-ct-members="믿음2">48명</span> · <span data-ct-sun="믿음2">6개 순</span></span></div>
-        <div class="sub-ldr">다락방장 엄재준 안수집사</div>
-      </div>
-      <div class="sun-list">
-        <div class="sun-row"><span class="sun-num">08</span><span class="sun-nm">조재관</span><span class="sun-badge">순장</span><span class="sun-role-tag">안수집사</span></div>
-        <div class="sun-row"><span class="sun-num">09</span><span class="sun-nm">이금자</span><span class="sun-badge">순장</span><span class="sun-role-tag">권사</span></div>
-        <div class="sun-row"><span class="sun-num">10</span><span class="sun-nm">송영이</span><span class="sun-badge">순장</span><span class="sun-role-tag">권사</span></div>
-        <div class="sun-row"><span class="sun-num">11</span><span class="sun-nm">이성진</span><span class="sun-badge">순장</span></div>
-        <div class="sun-row"><span class="sun-num">12</span><span class="sun-nm">이창권</span><span class="sun-badge">순장</span></div>
-        <div class="sun-row"><span class="sun-num">13</span><span class="sun-nm">김영미</span><span class="sun-badge">순장</span></div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ════ 소망 다락방 ════ -->
-  <div class="db-block">
-    <div class="db-hd hope">소망 다락방 <span class="db-cnt"><span data-ct-members="GROUP:소망">55명</span> · <span data-ct-sun="GROUP:소망">7개 순</span></span></div>
-    <div class="db-body">
-
-      <div class="sub-hd hope">
-        <div class="sub-hd-top"><span class="sub-name">소망1다락방</span><span class="sub-cnt"><span data-ct-members="소망1">33명</span> · <span data-ct-sun="소망1">4개 순</span></span></div>
-        <div class="sub-ldr">다락방장 홍진섭 안수집사</div>
-      </div>
-      <div class="sun-list">
-        <div class="sun-row"><span class="sun-num">01</span><span class="sun-nm">박제한</span><span class="sun-badge">순장</span><span class="sun-role-tag">안수집사</span></div>
-        <div class="sun-row"><span class="sun-num">02</span><span class="sun-nm">강행자</span><span class="sun-badge">순장</span><span class="sun-role-tag">권사</span></div>
-        <div class="sun-row"><span class="sun-num">03</span><span class="sun-nm">이명선</span><span class="sun-badge">순장</span><span class="sun-role-tag">권사</span></div>
-        <div class="sun-row"><span class="sun-num">04</span><span class="sun-nm">이강남</span><span class="sun-badge">순장</span></div>
-      </div>
-
-      <div class="sub-hd hope">
-        <div class="sub-hd-top"><span class="sub-name">소망2다락방</span><span class="sub-cnt"><span data-ct-members="소망2">22명</span> · <span data-ct-sun="소망2">3개 순</span></span></div>
-        <div class="sub-ldr">다락방장 남관우 안수집사</div>
-      </div>
-      <div class="sun-list">
-        <div class="sun-row"><span class="sun-num">08</span><span class="sun-nm">남관우</span><span class="sun-badge">순장</span><span class="sun-role-tag">안수집사</span></div>
-        <div class="sun-row"><span class="sun-num">09</span><span class="sun-nm">최인경</span><span class="sun-badge">순장</span><span class="sun-role-tag">안수집사</span></div>
-        <div class="sun-row"><span class="sun-num">10</span><span class="sun-nm">허은진</span><span class="sun-badge">순장</span><span class="sun-role-tag">권사</span></div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ════ 사랑 다락방 ════ -->
-  <div class="db-block">
-    <div class="db-hd love">사랑 다락방 <span class="db-cnt"><span data-ct-members="GROUP:사랑">153명</span> · <span data-ct-sun="GROUP:사랑">15개 순</span></span></div>
-    <div class="db-body">
-
-      <div class="sub-hd love">
-        <div class="sub-hd-top"><span class="sub-name">사랑1다락방</span><span class="sub-cnt"><span data-ct-members="사랑1">73명</span> · <span data-ct-sun="사랑1">7개 순</span></span></div>
-        <div class="sub-ldr">다락방장 김성현 안수집사</div>
-      </div>
-      <div class="sun-list">
-        <div class="sun-row"><span class="sun-num">01</span><span class="sun-nm">김성현</span><span class="sun-badge">순장</span><span class="sun-role-tag">안수집사</span></div>
-        <div class="sun-row"><span class="sun-num">02</span><span class="sun-nm">고주식</span><span class="sun-badge">순장</span></div>
-        <div class="sun-row"><span class="sun-num">03</span><span class="sun-nm">유덕영</span><span class="sun-badge">순장</span></div>
-        <div class="sun-row"><span class="sun-num">04</span><span class="sun-nm">이숙인</span><span class="sun-badge">순장</span><span class="sun-role-tag">권사</span></div>
-        <div class="sun-row empty"><span class="sun-num">05</span><span class="sun-nm">—</span></div>
-        <div class="sun-row"><span class="sun-num">06</span><span class="sun-nm">강은주</span><span class="sun-badge">순장</span><span class="sun-role-tag">권사</span></div>
-        <div class="sun-row"><span class="sun-num">07</span><span class="sun-nm">송정미</span><span class="sun-badge">순장</span></div>
-      </div>
-
-      <div class="sub-hd love">
-        <div class="sub-hd-top"><span class="sub-name">사랑2다락방</span><span class="sub-cnt"><span data-ct-members="사랑2">80명</span> · <span data-ct-sun="사랑2">8개 순</span></span></div>
-        <div class="sub-ldr">다락방장 김진국 안수집사</div>
-      </div>
-      <div class="sun-list">
-        <div class="sun-row"><span class="sun-num">08</span><span class="sun-nm">이성한</span><span class="sun-badge">순장</span></div>
-        <div class="sun-row"><span class="sun-num">09</span><span class="sun-nm">안승립</span><span class="sun-badge">순장</span><span class="sun-role-tag">안수집사</span></div>
-        <div class="sun-row"><span class="sun-num">10</span><span class="sun-nm">이영욱</span><span class="sun-badge">순장</span></div>
-        <div class="sun-row"><span class="sun-num">11</span><span class="sun-nm">최 황</span><span class="sun-badge">순장</span></div>
-        <div class="sun-row"><span class="sun-num">12</span><span class="sun-nm">박지수</span><span class="sun-badge">순장</span></div>
-        <div class="sun-row"><span class="sun-num">13</span><span class="sun-nm">김종중</span><span class="sun-badge">순장</span></div>
-        <div class="sun-row"><span class="sun-num">14</span><span class="sun-nm">정충균</span><span class="sun-badge">순장</span></div>
-        <div class="sun-row"><span class="sun-num">15</span><span class="sun-nm">이연주</span><span class="sun-badge">순장</span><span class="sun-role-tag">안수집사</span></div>
-      </div>
-
-    </div>
-  </div>
-
-
-  <!-- ── 장로 ── -->
-  <div class="sec-title">장로</div>
-
-  <div class="elder-group">
-    <div class="elder-gh simu">시무장로</div>
-    <div class="elder-gb">
-      <div class="elder-card"><div class="e-role">시무장로</div><div class="e-name">이인용</div></div>
-      <div class="elder-card"><div class="e-role">시무장로</div><div class="e-name">김의래</div></div>
-    </div>
-  </div>
-
-  <div class="elder-group">
-    <div class="elder-gh sayk">사역장로</div>
-    <div class="elder-gb">
-      <div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">신우권</div></div>
-      <div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">박병익</div></div>
-      <div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">심춘보</div></div>
-      <div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">이재호</div></div>
-      <div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">백남인</div></div>
-      <div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">호종일</div></div>
-      <div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">함공식</div></div>
-      <div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">정문규</div></div>
-      <div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">홍범식</div></div>
-      <div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">이상도</div></div>
-    </div>
-  </div>
-
-  <!-- ── 사역 담당 ── -->
-  <div class="sec-title">사역 담당</div>
-  <div class="ministry-grid" style="margin-bottom:4px;">
-    <div class="mc"><div class="mt">대표권사</div><div class="mn">복유선 권사</div></div>
-    <div class="mc"><div class="mt">권사회총무</div><div class="mn">황한나 권사</div></div>
-    <div class="mc"><div class="mt">서기</div><div class="mn">박제한 안수집사</div></div>
-    <div class="mc"><div class="mt">회계</div><div class="mn">정충균</div></div>
-    <div class="mc"><div class="mt">새가족사역 (토)</div><div class="mn">정순영 권사</div></div>
-    <div class="mc"><div class="mt">새가족사역 (일)</div><div class="mn">이은경 권사<br>전성심 권사</div></div>
-    <div class="mc"><div class="mt">양육총무</div><div class="mn">이성우 안수집사</div></div>
-    <div class="mc"><div class="mt">선교사역</div><div class="mn">김성현 안수집사</div></div>
-    <div class="mc"><div class="mt">사회선교사역</div><div class="mn">남관우 안수집사 (정)<br>정두식 순장 (부)</div></div>
-    <div class="mc"><div class="mt">예배사역</div><div class="mn">남관우 안수집사</div></div>
-    <div class="mc"><div class="mt">주차사역</div><div class="mn">홍진섭 안수집사</div></div>
-    <div class="mc"><div class="mt">일대일사역</div><div class="mn">강은주 권사</div></div>
-    <div class="mc"><div class="mt">임직관리 / 장례사역</div><div class="mn">박제한 안수집사</div></div>
-    <div class="mc"><div class="mt">찬양사역 인도</div><div class="mn">주웅현 안수집사<br>이창권 순장</div></div>
-    <div class="mc"><div class="mt">찬양사역 반주</div><div class="mn">황한나 권사<br>구자영 안수집사</div></div>
-  </div>
-
-  <!-- ── 후원선교사 ── -->
-  <div class="sec-title">후원선교사</div>
-  <div class="mission-grid">
-    <div class="msc">
-      <div class="mr">감비아</div>
-      <div class="mn">정진아</div>
-      <div class="ms">써포터: 복유선 권사</div>
-      <div class="ms-pray" data-miss="gambia"></div>
-    </div>
-    <div class="msc">
-      <div class="mr">이디오피아</div>
-      <div class="mn">김은주</div>
-      <div class="ms">써포터: 최인경 집사</div>
-      <div class="ms-pray" data-miss="ethiopia"></div>
-    </div>
-    <div class="msc">
-      <div class="mr">미얀마</div>
-      <div class="mn">이상오, 박선희</div>
-      <div class="ms">써포터: 이선화</div>
-      <div class="ms-pray" data-miss="myanmar"></div>
-    </div>
+  <div id="dynamicContent">
+    <div style="text-align:center;padding:40px 0;color:#999;">불러오는 중...</div>
   </div>
 
 </div>
 
-<footer>
+<footer id="footerLine">
   총무 주웅현 개정 20260613<br>
   <a href="./org.html" style="color:#93c5fd;font-size:11px;text-decoration:none;">다락방별 명단 보기 →</a>
 </footer>
 
 <script>
+var DB_GROUPS = [
+  { key: '믿음', cls: 'faith', subs: ['믿음1', '믿음2'] },
+  { key: '소망', cls: 'hope',  subs: ['소망1', '소망2'] },
+  { key: '사랑', cls: 'love',  subs: ['사랑1', '사랑2'] },
+];
+
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function sunRowHTML(sun) {
+  if (!sun.l1) {
+    return '<div class="sun-row empty"><span class="sun-num">' + String(sun.no).padStart(2,'0') + '</span><span class="sun-nm">—</span></div>';
+  }
+  var role = sun.l1role ? '<span class="sun-role-tag">' + esc(sun.l1role) + '</span>' : '';
+  return '<div class="sun-row"><span class="sun-num">' + String(sun.no).padStart(2,'0') + '</span><span class="sun-nm">' + esc(sun.l1) + '</span><span class="sun-badge">순장</span>' + role + '</div>';
+}
+
+function render(data) {
+  var el = document.getElementById('dynamicContent');
+  var html = '';
+
+  // 리더십
+  html += '<div class="sec-title">리더십</div><div class="ldrs">';
+  html += '<div class="ldr pastor"><div class="ldr-role">담당목사</div><div><div class="ldr-name">' + esc(data.leadership.pastor) + '</div></div></div>';
+  html += '<div class="arrow">↓</div>';
+  html += '<div class="ldr elder"><div class="ldr-role">대표장로</div><div><div class="ldr-name">' + esc(data.leadership.repElder) + '</div></div></div>';
+  html += '<div class="arrow">↓</div>';
+  html += '<div class="ldr admin"><div class="ldr-role">총무</div><div><div class="ldr-name">' + esc(data.leadership.secGenName) + (data.leadership.secGenRole ? ' ' + esc(data.leadership.secGenRole) : '') + '</div></div>' +
+    '<div class="ldr-divider"><div style="font-size:10px;color:#888;font-weight:700;">부총무</div><div style="font-size:14px;font-weight:700;">' + esc(data.leadership.viceSecGenName) + (data.leadership.viceSecGenRole ? ' ' + esc(data.leadership.viceSecGenRole) : '') + '</div></div></div>';
+  html += '</div>';
+
+  // 다락방 구조
+  html += '<div class="sec-title">다락방 구조</div>';
+  DB_GROUPS.forEach(function(g) {
+    html += '<div class="db-block"><div class="db-hd ' + g.cls + '">' + g.key + ' 다락방 <span class="db-cnt"><span data-ct-members="GROUP:' + g.key + '"></span> · <span data-ct-sun="GROUP:' + g.key + '"></span></span></div><div class="db-body">';
+    g.subs.forEach(function(subKey) {
+      var sub = data.darakbang[subKey];
+      html += '<div class="sub-hd ' + g.cls + '"><div class="sub-hd-top"><span class="sub-name">' + esc(sub.label) + '</span><span class="sub-cnt"><span data-ct-members="' + subKey + '"></span> · <span data-ct-sun="' + subKey + '"></span></span></div>' +
+        '<div class="sub-ldr">다락방장 ' + esc(sub.leaderName) + (sub.leaderRole ? ' ' + esc(sub.leaderRole) : '') + '</div></div>';
+      html += '<div class="sun-list">' + sub.suns.map(sunRowHTML).join('') + '</div>';
+    });
+    html += '</div></div>';
+  });
+
+  // 장로
+  html += '<div class="sec-title">장로</div>';
+  html += '<div class="elder-group"><div class="elder-gh simu">시무장로</div><div class="elder-gb">' +
+    data.elders.simu.map(function(n) { return '<div class="elder-card"><div class="e-role">시무장로</div><div class="e-name">' + esc(n) + '</div></div>'; }).join('') +
+    '</div></div>';
+  html += '<div class="elder-group"><div class="elder-gh sayk">사역장로</div><div class="elder-gb">' +
+    data.elders.sayk.map(function(n) { return '<div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">' + esc(n) + '</div></div>'; }).join('') +
+    '</div></div>';
+
+  // 사역 담당
+  html += '<div class="sec-title">사역 담당</div><div class="ministry-grid" style="margin-bottom:4px;">' +
+    data.ministries.map(function(m) {
+      return '<div class="mc"><div class="mt">' + esc(m.title) + '</div><div class="mn">' + m.names.map(esc).join('<br>') + '</div></div>';
+    }).join('') +
+    '</div>';
+
+  // 후원선교사
+  html += '<div class="sec-title">후원선교사</div><div class="mission-grid">' +
+    data.missionaries.map(function(m, i) {
+      return '<div class="msc"><div class="mr">' + esc(m.region) + '</div><div class="mn">' + esc(m.name) + '</div>' +
+        '<div class="ms">써포터: ' + esc(m.supporter) + '</div><div class="ms-pray" data-miss="m' + i + '"></div></div>';
+    }).join('') +
+    '</div>';
+
+  el.innerHTML = html;
+
+  if (typeof applyCommunityTotals === 'function') applyCommunityTotals();
+  initMissionPray();
+
+  var rev = '총무 ' + data.leadership.secGenName + ' 개정 ' + data.meta.revisedDate;
+  document.getElementById('headerSub').textContent = rev;
+  document.getElementById('footerLine').innerHTML = rev + '<br><a href="./org.html" style="color:#93c5fd;font-size:11px;text-decoration:none;">다락방별 명단 보기 →</a>' +
+    ' &nbsp;·&nbsp; <a href="./org-admin.html" style="color:#999;font-size:11px;text-decoration:none;">관리자</a>';
+}
+
 /* ── 선교사별 기도제목 (수기 입력 · 이 기기에 저장) ── */
-(function () {
+function initMissionPray() {
   function key(miss) { return 'jjr_miss_pray_' + miss; }
 
-  function render(box) {
+  function renderBox(box) {
     var miss = box.getAttribute('data-miss');
     var saved = '';
     try { saved = localStorage.getItem(key(miss)) || ''; } catch (e) {}
-
-    var head = '<div class="ms-pray-head"><span>기도제목</span>' +
-               '<button class="ms-pray-btn" data-act="edit">✎ 작성</button></div>';
-    var body;
-    if (saved.trim()) {
-      body = '<div class="ms-pray-text"></div>';
-    } else {
-      body = '<div class="ms-pray-text empty">기도제목을 입력해 주세요</div>';
-    }
+    var head = '<div class="ms-pray-head"><span>기도제목</span><button class="ms-pray-btn" data-act="edit">✎ 작성</button></div>';
+    var body = saved.trim() ? '<div class="ms-pray-text"></div>' : '<div class="ms-pray-text empty">기도제목을 입력해 주세요</div>';
     box.innerHTML = head + body;
     if (saved.trim()) box.querySelector('.ms-pray-text').textContent = saved;
   }
-
-  function edit(box) {
+  function editBox(box) {
     var miss = box.getAttribute('data-miss');
     var saved = '';
     try { saved = localStorage.getItem(key(miss)) || ''; } catch (e) {}
@@ -545,38 +323,36 @@
     wrap.innerHTML =
       '<div class="ms-pray-head"><span>기도제목 작성</span></div>' +
       '<textarea placeholder="예) 현지 사역의 문이 열리도록&#10;건강과 안전을 위해"></textarea>' +
-      '<div class="ms-pray-actions">' +
-        '<button class="ms-pray-save" data-act="save">저장</button>' +
-        '<button class="ms-pray-cancel" data-act="cancel">취소</button>' +
-      '</div>';
+      '<div class="ms-pray-actions"><button class="ms-pray-save" data-act="save">저장</button><button class="ms-pray-cancel" data-act="cancel">취소</button></div>';
     box.innerHTML = '';
     box.appendChild(wrap);
     var ta = wrap.querySelector('textarea');
     ta.value = saved;
     ta.focus();
   }
-
-  function save(box) {
+  function saveBox(box) {
     var miss = box.getAttribute('data-miss');
     var ta = box.querySelector('textarea');
-    var val = ta ? ta.value : '';
-    try { localStorage.setItem(key(miss), val); } catch (e) {}
-    render(box);
+    try { localStorage.setItem(key(miss), ta ? ta.value : ''); } catch (e) {}
+    renderBox(box);
   }
-
-  document.addEventListener('DOMContentLoaded', function () {
-    var boxes = document.querySelectorAll('.ms-pray');
-    boxes.forEach(function (box) {
-      render(box);
-      box.addEventListener('click', function (e) {
-        var act = e.target.getAttribute('data-act');
-        if (act === 'edit')   edit(box);
-        if (act === 'save')   save(box);
-        if (act === 'cancel') render(box);
-      });
+  document.querySelectorAll('.ms-pray').forEach(function (box) {
+    renderBox(box);
+    box.addEventListener('click', function (e) {
+      var act = e.target.getAttribute('data-act');
+      if (act === 'edit')   editBox(box);
+      if (act === 'save')   saveBox(box);
+      if (act === 'cancel') renderBox(box);
     });
   });
-})();
+}
+
+var DB_URL = 'https://cgn-love-default-rtdb.asia-southeast1.firebasedatabase.app/orgdata2026.json';
+
+fetch(DB_URL, { cache: 'no-store' })
+  .then(function(res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+  .then(function(data) { render(data && data.darakbang ? data : ORG_DATA_DEFAULT); })
+  .catch(function() { render(ORG_DATA_DEFAULT); });
 </script>
 
 </body>

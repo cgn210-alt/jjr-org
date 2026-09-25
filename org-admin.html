@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>조직도 관리자</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#f5f4f1; --surface:#ffffff; --surface-sub:#f9f8f6;
+      --border:#e4e2dc; --border-strong:#c8c5bc;
+      --text-primary:#1a1916; --text-secondary:#5c5a55; --text-muted:#9c9990;
+      --accent:#1e3a5f; --accent-bg:#eaf0f7; --radius:10px;
+      --font:'Noto Sans KR',sans-serif;
+    }
+    body { font-family:var(--font); background:var(--bg); color:var(--text-primary); min-height:100vh; -webkit-font-smoothing:antialiased; }
+    .login-screen { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:24px; }
+    .login-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px 28px; width:100%; max-width:340px; text-align:center; }
+    .login-title { font-size:18px; font-weight:700; margin-bottom:6px; }
+    .login-sub { font-size:12px; color:var(--text-muted); margin-bottom:24px; }
+    .login-card input[type="email"] { width:100%; font-family:var(--font); font-size:15px; background:var(--surface-sub); border:1px solid var(--border); border-radius:var(--radius); padding:11px 14px; outline:none; margin-bottom:8px; text-align:left; letter-spacing:0; }
+    .login-card input[type="email"]:focus { border-color:var(--accent); }
+    .login-card input[type="password"] { width:100%; font-family:var(--font); font-size:15px; background:var(--surface-sub); border:1px solid var(--border); border-radius:var(--radius); padding:11px 14px; outline:none; text-align:center; letter-spacing:4px; margin-bottom:12px; }
+    .login-card input[type="password"]:focus { border-color:var(--accent); }
+    .btn-login { width:100%; font-family:var(--font); font-size:14px; font-weight:500; color:#fff; background:var(--accent); border:none; border-radius:var(--radius); padding:11px; cursor:pointer; }
+    .login-error { font-size:12px; color:#9c1a1a; margin-top:10px; display:none; }
+
+    .admin-screen { display:none; }
+    .admin-header { background:var(--surface); border-bottom:1px solid var(--border); padding:14px 18px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
+    .admin-header-title { font-size:15px; font-weight:700; }
+    .admin-header-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+    .btn-logout { font-family:var(--font); font-size:12px; color:var(--text-muted); background:var(--surface-sub); border:1px solid var(--border); border-radius:var(--radius); padding:6px 12px; cursor:pointer; }
+    .status-bar { display:flex; align-items:center; gap:8px; padding:8px 16px; background:var(--surface-sub); border-bottom:1px solid var(--border); font-size:11.5px; color:var(--text-muted); }
+    .status-dot { width:8px; height:8px; border-radius:50%; background:#b0aca4; flex-shrink:0; transition:background 0.3s; }
+    .status-dot.connected { background:#1e9e50; }
+
+    .section { background:var(--surface); border-bottom:8px solid var(--bg); padding:16px; }
+    .section-title { font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:2px; }
+    .section-sub { font-size:11px; color:var(--text-muted); margin-bottom:14px; }
+
+    .field-row { display:flex; flex-direction:column; gap:4px; margin-bottom:10px; }
+    .field-row.inline { flex-direction:row; gap:8px; align-items:flex-end; }
+    .field-row.inline .field-row { flex:1; margin-bottom:0; }
+    .field-label { font-size:11.5px; color:var(--text-secondary); font-weight:500; }
+    .field-input { font-family:var(--font); font-size:13.5px; color:var(--text-primary); background:var(--surface-sub); border:1px solid var(--border); border-radius:8px; padding:8px 12px; outline:none; width:100%; transition:border-color 0.15s; }
+    .field-input:focus { border-color:var(--accent); }
+
+    .card { background:var(--surface-sub); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:10px; }
+    .card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+    .card-title { font-size:12.5px; font-weight:700; color:var(--text-secondary); }
+    .btn-remove { font-family:var(--font); font-size:11px; color:#9c1a1a; background:#fbe9e7; border:1px solid #f3c9c4; border-radius:8px; padding:4px 9px; cursor:pointer; }
+    .btn-add { font-family:var(--font); font-size:13px; font-weight:600; color:var(--accent); background:var(--accent-bg); border:1px dashed var(--accent); border-radius:10px; padding:9px; width:100%; cursor:pointer; margin-top:4px; }
+
+    .tag-editor { display:flex; flex-wrap:wrap; gap:6px; padding:8px; background:var(--surface); border:1px solid var(--border); border-radius:8px; min-height:44px; align-items:center; }
+    .tag { display:inline-flex; align-items:center; gap:4px; background:var(--accent-bg); color:var(--accent); border-radius:6px; padding:3px 8px; font-size:12.5px; font-weight:500; }
+    .tag-remove { background:none; border:none; color:var(--accent); cursor:pointer; font-size:15px; line-height:1; padding:0 2px; opacity:0.7; }
+    .tag-remove:hover { opacity:1; }
+    .tag-add-row { display:flex; gap:6px; align-items:center; margin-top:6px; }
+    .tag-add-input { flex:1; font-family:var(--font); font-size:13px; color:var(--text-primary); background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px 12px; outline:none; }
+    .tag-add-input:focus { border-color:var(--accent); }
+    .tag-add-btn { font-family:var(--font); font-size:12.5px; font-weight:500; color:#fff; background:var(--accent); border:none; border-radius:8px; padding:8px 14px; cursor:pointer; white-space:nowrap; }
+    .tag-hint { font-size:10.5px; color:var(--text-muted); margin-top:4px; }
+
+    .collapse-header { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; cursor:pointer; background:var(--surface); border:1px solid var(--border); border-radius:10px; user-select:none; }
+    .collapse-header .chevron { color:var(--text-muted); transition:transform 0.2s; }
+    .collapse-header.open .chevron { transform:rotate(180deg); }
+    .collapse-body { display:none; padding:12px 2px 4px; }
+    .collapse-body.open { display:block; }
+    .db-group-title { font-size:14px; font-weight:800; }
+    .db-group-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+    .sub-collapse { margin-top:10px; }
+
+    .sun-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:8px; }
+    .sun-card-top { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+    .sun-no-input { width:52px; flex-shrink:0; text-align:center; }
+    .sun-leader-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px; }
+    .sun-leader-grid .field-input { font-size:13px; }
+
+    .admin-content { padding-bottom:90px; }
+    .save-bar { position:fixed; bottom:0; left:0; right:0; padding:12px 16px; background:var(--surface); border-top:1px solid var(--border); z-index:20; }
+    .btn-save { width:100%; font-family:var(--font); font-size:14px; font-weight:700; color:#fff; background:var(--accent); border:none; border-radius:var(--radius); padding:13px; cursor:pointer; }
+    .toast { position:fixed; top:70px; left:50%; transform:translateX(-50%) translateY(-10px); background:#1a1916; color:#fff; font-size:13px; padding:10px 20px; border-radius:20px; opacity:0; transition:opacity 0.2s, transform 0.2s; z-index:100; white-space:nowrap; pointer-events:none; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-title">조직도 관리자</div>
+    <div class="login-sub">관리자 계정으로 로그인하세요</div>
+    <input type="email" id="emailInput" class="field-input" placeholder="이메일" style="margin-bottom:8px;" onkeydown="if(event.key==='Enter')document.getElementById('pwInput').focus()" />
+    <input type="password" id="pwInput" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()" />
+    <button class="btn-login" onclick="doLogin()">로그인</button>
+    <div class="login-error" id="loginError">이메일 또는 비밀번호가 올바르지 않습니다</div>
+  </div>
+</div>
+
+<!-- 관리자 -->
+<div class="admin-screen" id="adminScreen">
+  <div class="admin-header">
+    <div>
+      <div class="admin-header-title">조직도 관리자</div>
+      <div class="admin-header-sub">아래에서 수정 후 맨 아래 저장 버튼을 눌러주세요</div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">로그아웃</button>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Firebase 연결 중...</span>
+  </div>
+
+  <div class="admin-content" id="adminContent"></div>
+
+  <div class="save-bar">
+    <button class="btn-save" onclick="saveAll()">저장 — 조직도·명단에 즉시 반영</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script src="./org-data-default.js"></script>
+
+<script>
+var _dbRef = null;
+var DATA = null; // 편집 중인 전체 데이터 (JSON.parse(JSON.stringify(ORG_DATA_DEFAULT)) 로 시작)
+
+window.addEventListener('load', function() {
+  try {
+    firebase.initializeApp({
+      apiKey:            "AIzaSyCoStBz_34c5ZvplNSm8rarnd7zVLUiexk",
+      authDomain:        "cgn-love.firebaseapp.com",
+      databaseURL:       "https://cgn-love-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId:         "cgn-love",
+      storageBucket:     "cgn-love.firebasestorage.app",
+      messagingSenderId: "164467571776",
+      appId:             "1:164467571776:web:6c3df66c56f907e808b3a5"
+    });
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminScreen').style.display = 'block';
+        initDB();
+      } else {
+        document.getElementById('adminScreen').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        if (_dbRef) { _dbRef.off(); _dbRef = null; }
+      }
+    });
+  } catch(e) {
+    document.getElementById('statusText').textContent = 'Firebase 오류: ' + e.message;
+  }
+});
+
+function initDB() {
+  _dbRef = firebase.database().ref('orgdata2026');
+  _dbRef.once('value').then(function(snap) {
+    document.getElementById('statusDot').classList.add('connected');
+    document.getElementById('statusText').textContent = 'Firebase 연결됨 — 저장 시 즉시 반영';
+    var saved = snap.val();
+    DATA = saved || JSON.parse(JSON.stringify(ORG_DATA_DEFAULT));
+    renderAll();
+  }, function(err) {
+    document.getElementById('statusText').textContent = '연결 실패: ' + err.message;
+  });
+}
+
+function doLogin() {
+  var email = document.getElementById('emailInput').value.trim();
+  var pw    = document.getElementById('pwInput').value;
+  var errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+  if (!email || !pw) { errEl.style.display = 'block'; return; }
+  firebase.auth().signInWithEmailAndPassword(email, pw)
+    .catch(function() { errEl.style.display = 'block'; document.getElementById('pwInput').value = ''; });
+}
+function doLogout() { firebase.auth().signOut(); }
+
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ── 태그 에디터 (배차표 관리자 패턴 재사용, 배열 참조를 직접 조작) ── */
+function buildTagEditor(container, arr, onChange) {
+  container.innerHTML = '';
+  var box = document.createElement('div');
+  box.className = 'tag-editor';
+  arr.forEach(function(val, i) {
+    var tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.innerHTML = esc(val) + '<button class="tag-remove" type="button">×</button>';
+    tag.querySelector('.tag-remove').onclick = function() { arr.splice(i, 1); buildTagEditor(container, arr, onChange); onChange(); };
+    box.appendChild(tag);
+  });
+  container.appendChild(box);
+
+  var row = document.createElement('div');
+  row.className = 'tag-add-row';
+  var input = document.createElement('input');
+  input.className = 'tag-add-input';
+  input.placeholder = '이름 입력 후 Enter';
+  var btn = document.createElement('button');
+  btn.className = 'tag-add-btn'; btn.type = 'button'; btn.textContent = '+ 추가';
+  function add() {
+    var v = input.value.trim();
+    if (!v) return;
+    arr.push(v);
+    onChange();
+    buildTagEditor(container, arr, onChange);
+  }
+  btn.onclick = add;
+  input.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); add(); } });
+  row.append(input, btn);
+  container.appendChild(row);
+}
+
+function toggleCollapse(hdr) {
+  var body = hdr.nextElementSibling;
+  hdr.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+/* ── 렌더링 ── */
+function renderAll() {
+  var c = document.getElementById('adminContent');
+  c.innerHTML = '';
+  c.appendChild(renderLeadership());
+  c.appendChild(renderElders());
+  c.appendChild(renderMinistries());
+  c.appendChild(renderMissionaries());
+  c.appendChild(renderDarakbang());
+}
+
+function renderLeadership() {
+  var sec = document.createElement('div');
+  sec.className = 'section';
+  sec.innerHTML =
+    '<div class="section-title">리더십</div>' +
+    '<div class="section-sub">담당목사 · 대표장로 · 총무 · 부총무</div>';
+  var L = DATA.leadership;
+  var fields = [
+    ['담당목사', 'pastor'], ['대표장로', 'repElder'],
+  ];
+  fields.forEach(function(f) {
+    var row = document.createElement('div'); row.className = 'field-row';
+    row.innerHTML = '<div class="field-label">' + f[0] + '</div><input class="field-input" value="' + esc(L[f[1]]) + '">';
+    row.querySelector('input').oninput = function(e) { L[f[1]] = e.target.value; };
+    sec.appendChild(row);
+  });
+  [['총무', 'secGenName', 'secGenRole'], ['부총무', 'viceSecGenName', 'viceSecGenRole']].forEach(function(f) {
+    var row = document.createElement('div'); row.className = 'field-row inline';
+    row.innerHTML =
+      '<div class="field-row"><div class="field-label">' + f[0] + ' 이름</div><input class="field-input" value="' + esc(L[f[1]]) + '"></div>' +
+      '<div class="field-row"><div class="field-label">직분</div><input class="field-input" value="' + esc(L[f[2]]) + '"></div>';
+    var inputs = row.querySelectorAll('input');
+    inputs[0].oninput = function(e) { L[f[1]] = e.target.value; };
+    inputs[1].oninput = function(e) { L[f[2]] = e.target.value; };
+    sec.appendChild(row);
+  });
+  return sec;
+}
+
+function renderElders() {
+  var sec = document.createElement('div');
+  sec.className = 'section';
+  sec.innerHTML = '<div class="section-title">장로</div><div class="section-sub">시무장로 · 사역장로</div>';
+  [['시무장로', 'simu'], ['사역장로', 'sayk']].forEach(function(f) {
+    var row = document.createElement('div'); row.className = 'field-row';
+    var label = document.createElement('div'); label.className = 'field-label'; label.textContent = f[0];
+    var box = document.createElement('div');
+    row.append(label, box);
+    buildTagEditor(box, DATA.elders[f[1]], function(){});
+    sec.appendChild(row);
+  });
+  return sec;
+}
+
+function renderMinistries() {
+  var sec = document.createElement('div');
+  sec.className = 'section';
+  sec.innerHTML = '<div class="section-title">사역 담당</div><div class="section-sub">직함별 담당자</div>';
+  var list = document.createElement('div');
+  sec.appendChild(list);
+
+  function draw() {
+    list.innerHTML = '';
+    DATA.ministries.forEach(function(m, i) {
+      var card = document.createElement('div'); card.className = 'card';
+      card.innerHTML =
+        '<div class="card-top"><span class="card-title">사역 ' + (i + 1) + '</span><button class="btn-remove" type="button">삭제</button></div>' +
+        '<div class="field-row"><div class="field-label">직함</div><input class="field-input" value="' + esc(m.title) + '"></div>' +
+        '<div class="field-row"><div class="field-label">담당자</div><div class="names-box"></div></div>';
+      card.querySelector('.btn-remove').onclick = function() { DATA.ministries.splice(i, 1); draw(); };
+      card.querySelector('.field-input').oninput = function(e) { m.title = e.target.value; };
+      buildTagEditor(card.querySelector('.names-box'), m.names, function(){});
+      list.appendChild(card);
+    });
+    var addBtn = document.createElement('button');
+    addBtn.className = 'btn-add'; addBtn.type = 'button'; addBtn.textContent = '+ 사역 추가';
+    addBtn.onclick = function() { DATA.ministries.push({ title: '새 사역', names: [] }); draw(); };
+    list.appendChild(addBtn);
+  }
+  draw();
+  return sec;
+}
+
+function renderMissionaries() {
+  var sec = document.createElement('div');
+  sec.className = 'section';
+  sec.innerHTML = '<div class="section-title">후원선교사</div><div class="section-sub">지역 · 이름 · 써포터</div>';
+  var list = document.createElement('div');
+  sec.appendChild(list);
+
+  function draw() {
+    list.innerHTML = '';
+    DATA.missionaries.forEach(function(m, i) {
+      var card = document.createElement('div'); card.className = 'card';
+      card.innerHTML =
+        '<div class="card-top"><span class="card-title">선교사 ' + (i + 1) + '</span><button class="btn-remove" type="button">삭제</button></div>' +
+        '<div class="field-row"><div class="field-label">지역</div><input class="field-input" data-k="region" value="' + esc(m.region) + '"></div>' +
+        '<div class="field-row"><div class="field-label">이름</div><input class="field-input" data-k="name" value="' + esc(m.name) + '"></div>' +
+        '<div class="field-row"><div class="field-label">써포터</div><input class="field-input" data-k="supporter" value="' + esc(m.supporter) + '"></div>';
+      card.querySelector('.btn-remove').onclick = function() { DATA.missionaries.splice(i, 1); draw(); };
+      card.querySelectorAll('input').forEach(function(inp) {
+        inp.oninput = function(e) { m[inp.getAttribute('data-k')] = e.target.value; };
+      });
+      list.appendChild(card);
+    });
+    var addBtn = document.createElement('button');
+    addBtn.className = 'btn-add'; addBtn.type = 'button'; addBtn.textContent = '+ 후원선교사 추가';
+    addBtn.onclick = function() { DATA.missionaries.push({ region: '', name: '', supporter: '' }); draw(); };
+    list.appendChild(addBtn);
+  }
+  draw();
+  return sec;
+}
+
+var DB_GROUPS = [
+  { key: '믿음', subs: ['믿음1', '믿음2'] },
+  { key: '소망', subs: ['소망1', '소망2'] },
+  { key: '사랑', subs: ['사랑1', '사랑2'] },
+];
+
+function renderDarakbang() {
+  var sec = document.createElement('div');
+  sec.className = 'section';
+  sec.innerHTML = '<div class="section-title">다락방별 순 명단</div><div class="section-sub">각 순의 순장·순원 (인원수·다락방 합계는 community-totals.js에서 별도 관리)</div>';
+
+  DB_GROUPS.forEach(function(g) {
+    var hdr = document.createElement('div');
+    hdr.className = 'collapse-header';
+    hdr.innerHTML = '<div class="db-group-title">' + g.key + ' 다락방</div><span class="chevron">&#8964;</span>';
+    var body = document.createElement('div');
+    body.className = 'collapse-body';
+    hdr.onclick = function() { toggleCollapse(hdr); };
+    sec.appendChild(hdr);
+    sec.appendChild(body);
+
+    g.subs.forEach(function(subKey) {
+      var sub = DATA.darakbang[subKey];
+      var subHdr = document.createElement('div');
+      subHdr.className = 'collapse-header sub-collapse';
+      subHdr.innerHTML = '<div><div class="db-group-title" style="font-size:13px;">' + esc(sub.label) + '</div><div class="db-group-sub">다락방장 ' + esc(sub.leaderName) + ' ' + esc(sub.leaderRole) + '</div></div><span class="chevron">&#8964;</span>';
+      var subBody = document.createElement('div');
+      subBody.className = 'collapse-body';
+      subHdr.onclick = function() { toggleCollapse(subHdr); };
+      body.appendChild(subHdr);
+      body.appendChild(subBody);
+
+      var leaderRow = document.createElement('div');
+      leaderRow.className = 'field-row inline';
+      leaderRow.innerHTML =
+        '<div class="field-row"><div class="field-label">다락방장 이름</div><input class="field-input" data-k="leaderName" value="' + esc(sub.leaderName) + '"></div>' +
+        '<div class="field-row"><div class="field-label">직분</div><input class="field-input" data-k="leaderRole" value="' + esc(sub.leaderRole) + '"></div>';
+      leaderRow.querySelectorAll('input').forEach(function(inp) {
+        inp.oninput = function(e) { sub[inp.getAttribute('data-k')] = e.target.value; };
+      });
+      subBody.appendChild(leaderRow);
+
+      var sunList = document.createElement('div');
+      subBody.appendChild(sunList);
+
+      function drawSuns() {
+        sunList.innerHTML = '';
+        sub.suns.forEach(function(sun, i) {
+          var card = document.createElement('div'); card.className = 'sun-card';
+          card.innerHTML =
+            '<div class="sun-card-top">' +
+              '<input class="field-input sun-no-input" data-k="no" type="number" value="' + sun.no + '">' +
+              '<span style="font-size:11px;color:var(--text-muted);flex:1;">순번</span>' +
+              '<button class="btn-remove" type="button">삭제</button>' +
+            '</div>' +
+            '<div class="sun-leader-grid">' +
+              '<input class="field-input" data-k="l1" placeholder="순장 이름" value="' + esc(sun.l1) + '">' +
+              '<input class="field-input" data-k="l1role" placeholder="직분 (예: 안수집사)" value="' + esc(sun.l1role) + '">' +
+            '</div>' +
+            '<input class="field-input" data-k="l2" placeholder="배우자 이름 (없으면 비워둠)" value="' + esc(sun.l2) + '" style="margin-bottom:8px;">' +
+            '<div class="field-label" style="margin-bottom:4px;">순원 (부부는 "이름1, 이름2" 형태로 입력)</div>' +
+            '<div class="members-box"></div>';
+          card.querySelector('.btn-remove').onclick = function() { sub.suns.splice(i, 1); drawSuns(); };
+          card.querySelectorAll('input[data-k]').forEach(function(inp) {
+            var k = inp.getAttribute('data-k');
+            inp.oninput = function(e) { sun[k] = (k === 'no') ? (parseInt(e.target.value) || 0) : e.target.value; };
+          });
+          buildTagEditor(card.querySelector('.members-box'), sun.members, function(){});
+          sunList.appendChild(card);
+        });
+        var addSunBtn = document.createElement('button');
+        addSunBtn.className = 'btn-add'; addSunBtn.type = 'button'; addSunBtn.textContent = '+ 순 추가';
+        addSunBtn.onclick = function() {
+          var maxNo = sub.suns.reduce(function(m, s) { return Math.max(m, s.no || 0); }, 0);
+          sub.suns.push({ no: maxNo + 1, l1: '', l1role: '', l2: '', members: [] });
+          drawSuns();
+        };
+        sunList.appendChild(addSunBtn);
+      }
+      drawSuns();
+    });
+  });
+
+  return sec;
+}
+
+function saveAll() {
+  if (!_dbRef) { showToast('Firebase 연결 중입니다. 잠시 후 다시 시도하세요.'); return; }
+  _dbRef.set(DATA)
+    .then(function() { showToast('저장 완료 — 명단·조직도에 즉시 반영되었습니다'); })
+    .catch(function(err) { showToast('저장 실패: ' + err.message); });
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2600);
+}
+</script>
+</body>
+</html>

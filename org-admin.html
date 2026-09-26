@@ -244,6 +244,7 @@ function renderAll() {
   c.appendChild(renderMinistries());
   c.appendChild(renderMissionaries());
   c.appendChild(renderDarakbang());
+  recalcCounts();
 }
 
 function renderLeadership() {
@@ -356,15 +357,48 @@ var DB_GROUPS = [
   { key: '사랑', subs: ['사랑1', '사랑2'] },
 ];
 
+/* ── 인원/순 개수 자동 집계 (순원 명단에서 직접 계산) ── */
+function personCount(sun) {
+  var n = (sun.l1 ? 1 : 0) + (sun.l2 ? 1 : 0);
+  sun.members.forEach(function(m) { n += m.split(',').filter(function(s){ return s.trim(); }).length; });
+  return n;
+}
+function recalcCounts() {
+  var grandMembers = 1, grandSuns = 0; // +1 = 담당목사
+  DB_GROUPS.forEach(function(g) {
+    var groupMembers = 0, groupSuns = 0;
+    g.subs.forEach(function(subKey) {
+      var sub = DATA.darakbang[subKey];
+      var subMembers = 0;
+      sub.suns.forEach(function(sun, i) {
+        var c = personCount(sun);
+        subMembers += c;
+        var badge = document.getElementById('sun-badge-' + subKey + '-' + i);
+        if (badge) badge.textContent = c + '명';
+      });
+      groupMembers += subMembers; groupSuns += sub.suns.length;
+      var subBadge = document.getElementById('sub-badge-' + subKey);
+      if (subBadge) subBadge.textContent = subMembers + '명 · ' + sub.suns.length + '개 순';
+    });
+    grandMembers += groupMembers; grandSuns += groupSuns;
+    var groupBadge = document.getElementById('group-badge-' + g.key);
+    if (groupBadge) groupBadge.textContent = groupMembers + '명 · ' + groupSuns + '개 순';
+  });
+  var totalBadge = document.getElementById('org-total-badge');
+  if (totalBadge) totalBadge.textContent = '총 ' + grandMembers + '명 · ' + grandSuns + '개 순';
+}
+
 function renderDarakbang() {
   var sec = document.createElement('div');
   sec.className = 'section';
-  sec.innerHTML = '<div class="section-title">다락방별 순 명단</div><div class="section-sub">각 순의 순장·순원 (인원수·다락방 합계는 community-totals.js에서 별도 관리)</div>';
+  sec.innerHTML = '<div class="section-title">다락방별 순 명단</div>' +
+    '<div class="section-sub">각 순의 순장·순원 — 인원수·다락방 합계는 명단에서 자동으로 계산됩니다</div>' +
+    '<div id="org-total-badge" style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;"></div>';
 
   DB_GROUPS.forEach(function(g) {
     var hdr = document.createElement('div');
     hdr.className = 'collapse-header';
-    hdr.innerHTML = '<div class="db-group-title">' + g.key + ' 다락방</div><span class="chevron">&#8964;</span>';
+    hdr.innerHTML = '<div class="db-group-title">' + g.key + ' 다락방 <span id="group-badge-' + g.key + '" style="font-size:11px;font-weight:500;color:var(--text-muted);"></span></div><span class="chevron">&#8964;</span>';
     var body = document.createElement('div');
     body.className = 'collapse-body';
     hdr.onclick = function() { toggleCollapse(hdr); };
@@ -375,7 +409,7 @@ function renderDarakbang() {
       var sub = DATA.darakbang[subKey];
       var subHdr = document.createElement('div');
       subHdr.className = 'collapse-header sub-collapse';
-      subHdr.innerHTML = '<div><div class="db-group-title" style="font-size:13px;">' + esc(sub.label) + '</div><div class="db-group-sub">다락방장 ' + esc(sub.leaderName) + ' ' + esc(sub.leaderRole) + '</div></div><span class="chevron">&#8964;</span>';
+      subHdr.innerHTML = '<div><div class="db-group-title" style="font-size:13px;">' + esc(sub.label) + ' <span id="sub-badge-' + subKey + '" style="font-size:11px;font-weight:500;color:var(--text-muted);"></span></div><div class="db-group-sub">다락방장 ' + esc(sub.leaderName) + ' ' + esc(sub.leaderRole) + '</div></div><span class="chevron">&#8964;</span>';
       var subBody = document.createElement('div');
       subBody.className = 'collapse-body';
       subHdr.onclick = function() { toggleCollapse(subHdr); };
@@ -403,6 +437,7 @@ function renderDarakbang() {
             '<div class="sun-card-top">' +
               '<input class="field-input sun-no-input" data-k="no" type="number" value="' + sun.no + '">' +
               '<span style="font-size:11px;color:var(--text-muted);flex:1;">순</span>' +
+              '<span id="sun-badge-' + subKey + '-' + i + '" style="font-size:12px;font-weight:700;color:var(--accent);"></span>' +
               '<button class="btn-remove" type="button">삭제</button>' +
             '</div>' +
             '<div class="sun-leader-grid">' +
@@ -412,12 +447,15 @@ function renderDarakbang() {
             '<input class="field-input" data-k="l2" placeholder="배우자 이름 (없으면 비워둠)" value="' + esc(sun.l2) + '" style="margin-bottom:8px;">' +
             '<div class="field-label" style="margin-bottom:4px;">순원 (부부는 "이름1, 이름2" 형태로 입력)</div>' +
             '<div class="members-box"></div>';
-          card.querySelector('.btn-remove').onclick = function() { sub.suns.splice(i, 1); drawSuns(); };
+          card.querySelector('.btn-remove').onclick = function() { sub.suns.splice(i, 1); drawSuns(); recalcCounts(); };
           card.querySelectorAll('input[data-k]').forEach(function(inp) {
             var k = inp.getAttribute('data-k');
-            inp.oninput = function(e) { sun[k] = (k === 'no') ? (parseInt(e.target.value) || 0) : e.target.value; };
+            inp.oninput = function(e) {
+              sun[k] = (k === 'no') ? (parseInt(e.target.value) || 0) : e.target.value;
+              if (k === 'l1' || k === 'l2') recalcCounts();
+            };
           });
-          buildTagEditor(card.querySelector('.members-box'), sun.members, function(){});
+          buildTagEditor(card.querySelector('.members-box'), sun.members, recalcCounts);
           sunList.appendChild(card);
         });
         var addSunBtn = document.createElement('button');
@@ -426,6 +464,7 @@ function renderDarakbang() {
           var maxNo = sub.suns.reduce(function(m, s) { return Math.max(m, s.no || 0); }, 0);
           sub.suns.push({ no: maxNo + 1, l1: '', l1role: '', l2: '', members: [] });
           drawSuns();
+          recalcCounts();
         };
         sunList.appendChild(addSunBtn);
       }

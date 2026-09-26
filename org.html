@@ -170,7 +170,6 @@
       .container { padding: 0 8px; }
     }
   </style>
-  <script src="./community-totals.js?v=20260625"></script>
   <script src="./org-data-default.js"></script>
 </head>
 <body>
@@ -224,6 +223,41 @@ function personCount(sun) {
   var n = (sun.l1 ? 1 : 0) + (sun.l2 ? 1 : 0);
   sun.members.forEach(function(m) { n += m.split(',').filter(function(s){ return s.trim(); }).length; });
   return n;
+}
+
+/* ── 순원 명단 기반 인원/순 개수 자동 집계 (community-totals.js 대체) ── */
+function subTotals(sub) {
+  var members = 0;
+  sub.suns.forEach(function(sun) { members += personCount(sun); });
+  return { members: members, sun: sub.suns.length };
+}
+function groupTotals(data, groupKey) {
+  var g = DB_GROUPS.find(function(x) { return x.key === groupKey; });
+  return g.subs.reduce(function(acc, subKey) {
+    var t = subTotals(data.darakbang[subKey]);
+    acc.members += t.members; acc.sun += t.sun;
+    return acc;
+  }, { members: 0, sun: 0 });
+}
+function grandTotals(data) {
+  return DB_GROUPS.reduce(function(acc, g) {
+    var t = groupTotals(data, g.key);
+    acc.members += t.members; acc.sun += t.sun;
+    return acc;
+  }, { members: 1, sun: 0 }); // +1 = 담당목사
+}
+function orgCountLookup(data, key) {
+  if (key === 'ALL') return grandTotals(data);
+  if (key.indexOf('GROUP:') === 0) return groupTotals(data, key.slice(6));
+  return subTotals(data.darakbang[key]);
+}
+function applyOrgCounts(data) {
+  document.querySelectorAll('[data-ct-members]').forEach(function(el) {
+    el.textContent = orgCountLookup(data, el.getAttribute('data-ct-members')).members + '명';
+  });
+  document.querySelectorAll('[data-ct-sun]').forEach(function(el) {
+    el.textContent = orgCountLookup(data, el.getAttribute('data-ct-sun')).sun + '개 순';
+  });
 }
 
 function leaderCellHTML(sun) {
@@ -289,7 +323,7 @@ function render(data) {
     container.appendChild(block);
   });
 
-  if (typeof applyCommunityTotals === 'function') applyCommunityTotals();
+  applyOrgCounts(data);
 
   var rev = '총무 ' + data.leadership.secGenName + ' · 최종수정 ' +
     data.meta.revisedDate.slice(0,4) + '.' + data.meta.revisedDate.slice(4,6) + '.' + data.meta.revisedDate.slice(6,8);

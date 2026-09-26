@@ -106,6 +106,7 @@
     .sun-num { font-size: 10px; font-weight: 700; color: #bbb; white-space: nowrap; min-width: 22px; flex-shrink: 0; order: 0; }
     .sun-nm { font-size: 14px; font-weight: 900; color: #111; white-space: nowrap; flex-shrink: 0; order: 1; }
     .sun-role-tag { font-size: 10px; color: #999; white-space: nowrap; flex-shrink: 0; order: 2; }
+    .sun-count { font-size: 10px; font-weight: 700; color: #6b7280; white-space: nowrap; flex-shrink: 0; order: 2; }
     .sun-badge {
       font-size: 9px; font-weight: 700; color: white;
       background: #9ca3af; padding: 1px 4px;
@@ -271,11 +272,12 @@ function applyOrgCounts(data) {
 }
 
 function sunRowHTML(sun) {
+  var count = '<span class="sun-count">' + personCount(sun) + '명</span>';
   if (!sun.l1) {
-    return '<div class="sun-row empty"><span class="sun-num">' + String(sun.no).padStart(2,'0') + '</span><span class="sun-nm">—</span></div>';
+    return '<div class="sun-row empty"><span class="sun-num">' + String(sun.no).padStart(2,'0') + '</span><span class="sun-nm">—</span>' + count + '</div>';
   }
   var role = sun.l1role ? '<span class="sun-role-tag">' + esc(sun.l1role) + '</span>' : '';
-  return '<div class="sun-row"><span class="sun-num">' + String(sun.no).padStart(2,'0') + '</span><span class="sun-nm">' + esc(sun.l1) + '</span><span class="sun-badge">순장</span>' + role + '</div>';
+  return '<div class="sun-row"><span class="sun-num">' + String(sun.no).padStart(2,'0') + '</span><span class="sun-nm">' + esc(sun.l1) + '</span>' + count + '<span class="sun-badge">순장</span>' + role + '</div>';
 }
 
 function render(data) {
@@ -292,8 +294,8 @@ function render(data) {
     '<div class="ldr-divider"><div style="font-size:10px;color:#888;font-weight:700;">부총무</div><div style="font-size:14px;font-weight:700;">' + esc(data.leadership.viceSecGenName) + (data.leadership.viceSecGenRole ? ' ' + esc(data.leadership.viceSecGenRole) : '') + '</div></div></div>';
   html += '</div>';
 
-  // 다락방 구조
-  html += '<div class="sec-title">다락방 구조</div>';
+  // 다락방
+  html += '<div class="sec-title">다락방</div>';
   DB_GROUPS.forEach(function(g) {
     html += '<div class="db-block"><div class="db-hd ' + g.cls + '">' + g.key + ' 다락방 <span class="db-cnt"><span data-ct-members="GROUP:' + g.key + '"></span> · <span data-ct-sun="GROUP:' + g.key + '"></span></span></div><div class="db-body">';
     g.subs.forEach(function(subKey) {
@@ -387,11 +389,26 @@ function initMissionPray() {
 }
 
 var DB_URL = 'https://cgn-love-default-rtdb.asia-southeast1.firebasedatabase.app/orgdata2026.json';
+var POLL_INTERVAL = 10000;
+var _lastDataJSON = null;
 
-fetch(DB_URL, { cache: 'no-store' })
-  .then(function(res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
-  .then(function(data) { render(data && data.darakbang ? data : ORG_DATA_DEFAULT); })
-  .catch(function() { render(ORG_DATA_DEFAULT); });
+function loadAndRender() {
+  fetch(DB_URL, { cache: 'no-store' })
+    .then(function(res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+    .then(function(data) {
+      var d = (data && data.darakbang) ? data : ORG_DATA_DEFAULT;
+      var json = JSON.stringify(d);
+      if (json === _lastDataJSON) return; // 변경 없으면 다시 그리지 않음
+      _lastDataJSON = json;
+      render(d);
+    })
+    .catch(function() {
+      if (_lastDataJSON === null) { _lastDataJSON = JSON.stringify(ORG_DATA_DEFAULT); render(ORG_DATA_DEFAULT); }
+    });
+}
+
+loadAndRender();
+setInterval(loadAndRender, POLL_INTERVAL);
 </script>
 
 </body>

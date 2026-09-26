@@ -332,11 +332,26 @@ function render(data) {
 }
 
 var DB_URL = 'https://cgn-love-default-rtdb.asia-southeast1.firebasedatabase.app/orgdata2026.json';
+var POLL_INTERVAL = 10000;
+var _lastDataJSON = null;
 
-fetch(DB_URL, { cache: 'no-store' })
-  .then(function(res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
-  .then(function(data) { render(data && data.darakbang ? data : ORG_DATA_DEFAULT); })
-  .catch(function() { render(ORG_DATA_DEFAULT); });
+function loadAndRender() {
+  fetch(DB_URL, { cache: 'no-store' })
+    .then(function(res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+    .then(function(data) {
+      var d = (data && data.darakbang) ? data : ORG_DATA_DEFAULT;
+      var json = JSON.stringify(d);
+      if (json === _lastDataJSON) return; // 변경 없으면 다시 그리지 않음
+      _lastDataJSON = json;
+      render(d);
+    })
+    .catch(function() {
+      if (_lastDataJSON === null) { _lastDataJSON = JSON.stringify(ORG_DATA_DEFAULT); render(ORG_DATA_DEFAULT); }
+    });
+}
+
+loadAndRender();
+setInterval(loadAndRender, POLL_INTERVAL);
 </script>
 
 </body>

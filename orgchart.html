@@ -191,7 +191,7 @@
 <header>
   <a href="https://cgn210-alt.github.io/jjr-jonggangye-2026/">← 중종로공동체 홈으로</a>
   <h1>2026년 중종로공동체 조직도</h1>
-  <div class="subtitle" id="headerSub">총무 주웅현 개정 20260613</div>
+  <div class="subtitle" id="headerSub">총무 주웅현 개정 20261104</div>
 </header>
 
 <div class="wrap">
@@ -227,7 +227,7 @@
 </div>
 
 <footer id="footerLine">
-  총무 주웅현 개정 20260613<br>
+  총무 주웅현 개정 20261104<br>
   <a href="./org.html" style="color:#93c5fd;font-size:11px;text-decoration:none;">다락방별 명단 보기 →</a>
 </footer>
 
@@ -345,7 +345,8 @@ function render(data) {
   applyOrgCounts(data);
   initMissionPray();
 
-  var rev = '총무 ' + data.leadership.secGenName + ' 개정 ' + data.meta.revisedDate;
+  var revisedDate = '20261104'; // 최종수정일 (Firebase meta.revisedDate 대신 표시)
+  var rev = '총무 ' + data.leadership.secGenName + ' 개정 ' + revisedDate;
   document.getElementById('headerSub').textContent = rev;
   document.getElementById('footerLine').innerHTML = rev + '<br><a href="./org.html" style="color:#93c5fd;font-size:11px;text-decoration:none;">다락방별 명단 보기 →</a>' +
     ' &nbsp;·&nbsp; <a href="./org-admin.html" style="color:#999;font-size:11px;text-decoration:none;">관리자</a>';

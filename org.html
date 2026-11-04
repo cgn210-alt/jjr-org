@@ -185,9 +185,8 @@
 
 <header>
   <div class="header-inner">
-    <a href="https://cgn210-alt.github.io/jjr-jonggangye-2026/">← 중종로공동체 홈으로</a>
     <h1>중종로공동체 다락방별 명단</h1>
-    <div class="subtitle" id="revisedLine">총무 주웅현 · 최종수정 2026.06.13</div>
+    <div class="subtitle" id="revisedLine">총무 주웅현 · 최종수정 2026.11.04</div>
   </div>
 </header>
 
@@ -217,7 +216,7 @@
   <div style="text-align:center;padding:40px 0;color:#999;">불러오는 중...</div>
 </div>
 
-<footer id="footerLine">중종로공동체 총무 주웅현 · 최종수정 20260613</footer>
+<footer id="footerLine">중종로공동체 총무 주웅현 · 최종수정 20261104</footer>
 
 <script>
 var DB_GROUPS = [
@@ -334,10 +333,11 @@ function render(data) {
 
   applyOrgCounts(data);
 
+  var revisedDate = '20261104'; // 최종수정일 (Firebase meta.revisedDate 대신 표시)
   var rev = '총무 ' + data.leadership.secGenName + ' · 최종수정 ' +
-    data.meta.revisedDate.slice(0,4) + '.' + data.meta.revisedDate.slice(4,6) + '.' + data.meta.revisedDate.slice(6,8);
+    revisedDate.slice(0,4) + '.' + revisedDate.slice(4,6) + '.' + revisedDate.slice(6,8);
   document.getElementById('revisedLine').textContent = rev;
-  document.getElementById('footerLine').innerHTML = '중종로공동체 총무 ' + esc(data.leadership.secGenName) + ' · 최종수정 ' + esc(data.meta.revisedDate) + ' · <a href="./org-admin.html" style="color:#999;">관리자</a>';
+  document.getElementById('footerLine').innerHTML = '중종로공동체 총무 ' + esc(data.leadership.secGenName) + ' · 최종수정 ' + esc(revisedDate) + ' · <a href="./org-admin.html" style="color:#999;">관리자</a>';
 }
 
 var DB_URL = 'https://cgn-love-default-rtdb.asia-southeast1.firebasedatabase.app/orgdata2026.json';

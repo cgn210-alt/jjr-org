@@ -153,9 +153,8 @@
     td:nth-child(2) { text-align: center; font-weight: 700; white-space: nowrap; }
     td:nth-child(3) { white-space: nowrap; }
 
-    /* 모바일: 가로 스크롤 */
-    .sub-block { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { min-width: 520px; }
+    /* 모바일: 가로 스크롤 없이 순원 명단이 줄바꿈되어 보이도록 */
+    .명단 { overflow-wrap: anywhere; }
 
     .순장 { font-weight: 700; color: #1e40af; }
     .순장 .leader-name { color: #1e40af; font-weight: 700; }
@@ -177,6 +176,9 @@
       .summary-card .num { font-size: 18px; }
       .summary-card .label { font-size: 10px; }
       .container { padding: 0 8px; }
+      th, td { padding: 6px 6px; }
+      th:nth-child(1) { width: 28px; }
+      th:nth-child(2) { width: 32px; }
     }
   </style>
   <script src="./org-data-default.js"></script>

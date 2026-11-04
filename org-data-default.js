@@ -8,7 +8,7 @@
    실제 최신 데이터는 Firebase에 저장되며, 이 파일은 "최초 기준값"입니다.
    ───────────────────────────────────────────────────────────────────── */
 var ORG_DATA_DEFAULT = {
-  meta: { revisedBy: '주웅현', revisedDate: '20260613' },
+  meta: { revisedBy: '주웅현', revisedDate: '20260613', revisedDateOrg: '20261104', revisedDateChart: '20261104' },
   leadership: {
     pastor: '노치형',
     repElder: '오명',

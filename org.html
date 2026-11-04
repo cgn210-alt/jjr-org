@@ -333,7 +333,7 @@ function render(data) {
 
   applyOrgCounts(data);
 
-  var revisedDate = '20261104'; // 최종수정일 (Firebase meta.revisedDate 대신 표시)
+  var revisedDate = (data.meta && data.meta.revisedDateOrg) || '20261104'; // 최종수정일 (관리자 페이지에서 수정)
   var rev = '총무 ' + data.leadership.secGenName + ' · 최종수정 ' +
     revisedDate.slice(0,4) + '.' + revisedDate.slice(4,6) + '.' + revisedDate.slice(6,8);
   document.getElementById('revisedLine').textContent = rev;

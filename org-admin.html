@@ -239,12 +239,37 @@ function toggleCollapse(hdr) {
 function renderAll() {
   var c = document.getElementById('adminContent');
   c.innerHTML = '';
+  c.appendChild(renderRevised());
   c.appendChild(renderLeadership());
   c.appendChild(renderElders());
   c.appendChild(renderMinistries());
   c.appendChild(renderMissionaries());
   c.appendChild(renderDarakbang());
   recalcCounts();
+}
+
+/* 최종수정일: meta.revisedDateOrg(다락방별 명단) / meta.revisedDateChart(조직도), 'YYYYMMDD' 형식 */
+var REVISED_DEFAULT = '20261104';
+function renderRevised() {
+  var sec = document.createElement('div');
+  sec.className = 'section';
+  sec.innerHTML =
+    '<div class="section-title">최종수정일</div>' +
+    '<div class="section-sub">다락방별 명단 · 조직도에 각각 표시되는 날짜</div>';
+  if (!DATA.meta) DATA.meta = {};
+  var M = DATA.meta;
+  [['다락방별 명단', 'revisedDateOrg'], ['조직도', 'revisedDateChart']].forEach(function(f) {
+    if (!M[f[1]]) M[f[1]] = REVISED_DEFAULT;
+    var v = M[f[1]];
+    var row = document.createElement('div'); row.className = 'field-row';
+    row.innerHTML = '<div class="field-label">' + f[0] + '</div><input type="date" class="field-input" value="' +
+      v.slice(0,4) + '-' + v.slice(4,6) + '-' + v.slice(6,8) + '">';
+    row.querySelector('input').oninput = function(e) {
+      if (e.target.value) M[f[1]] = e.target.value.replace(/-/g, '');
+    };
+    sec.appendChild(row);
+  });
+  return sec;
 }
 
 function renderLeadership() {

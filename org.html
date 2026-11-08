@@ -183,7 +183,19 @@
       outline: none;
     }
     .search-bar input:focus { border-color: #2d5a8e; box-shadow: 0 0 0 3px rgba(45,90,142,0.15); }
-    .search-result { font-size: 12px; color: #666; padding: 6px 2px 0; min-height: 18px; }
+    .search-result { font-size: 12px; color: #666; padding: 6px 2px 0; min-height: 18px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .search-reset {
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e3a5f;
+      background: white;
+      border: 1px solid #c7d2e0;
+      border-radius: 20px;
+      padding: 3px 12px;
+      cursor: pointer;
+    }
+    .search-reset:hover { background: #e8eef6; }
     mark { background: #fde68a; color: inherit; padding: 0 1px; border-radius: 2px; }
 
     footer {
@@ -399,9 +411,11 @@ function render(data) {
   applyOrgCounts(data);
 
   var resultEl = document.getElementById('searchResult');
-  if (!_query) resultEl.textContent = '';
-  else if (!hitCount) resultEl.textContent = '"' + _query + '"에 해당하는 이름이 없습니다.';
-  else resultEl.textContent = '"' + _query + '" 검색 결과 ' + hitCount + '건';
+  if (!_query) resultEl.innerHTML = '';
+  else resultEl.innerHTML = '<span>' + (hitCount
+      ? '"' + esc(_query) + '" 검색 결과 ' + hitCount + '건'
+      : '"' + esc(_query) + '"에 해당하는 이름이 없습니다.') + '</span>' +
+    '<button type="button" class="search-reset" onclick="resetSearch()">← 전체 명단 보기</button>';
 
   var revisedDate = (data.meta && data.meta.revisedDateOrg) || '20261104'; // 최종수정일 (관리자 페이지에서 수정)
   var rev = '총무 ' + data.leadership.secGenName + ' · 최종수정 ' +
@@ -429,9 +443,31 @@ function loadAndRender() {
     });
 }
 
-document.getElementById('searchInput').addEventListener('input', function(e) {
-  _query = e.target.value.replace(/\s+/g, '');
+function setQuery(q) {
+  _query = q;
   if (_lastData) render(_lastData);
+}
+
+// 검색 시작 시 기록을 하나 쌓아서, 휴대폰 뒤로가기로 검색 전 화면으로 돌아갈 수 있게 함
+function inSearchState() { return !!(history.state && history.state.search); }
+
+function resetSearch() {
+  document.getElementById('searchInput').value = '';
+  setQuery('');
+  if (inSearchState()) history.back();
+}
+
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  var q = e.target.value.replace(/\s+/g, '');
+  if (q && !inSearchState()) { try { history.pushState({ search: true }, ''); } catch (err) {} }
+  setQuery(q);
+  if (!q && inSearchState()) history.back();
+});
+
+window.addEventListener('popstate', function() {
+  if (inSearchState()) return;
+  document.getElementById('searchInput').value = '';
+  setQuery('');
 });
 
 loadAndRender();

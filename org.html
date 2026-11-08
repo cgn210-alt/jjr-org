@@ -162,6 +162,30 @@
     .명단 { color: #374151; }
     .temp { color: #f59e0b; font-size: 11px; }
 
+    /* ── 이름 검색 ── */
+    .search-bar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #f0f2f5;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 12px 16px 4px;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      background: white;
+      outline: none;
+    }
+    .search-bar input:focus { border-color: #2d5a8e; box-shadow: 0 0 0 3px rgba(45,90,142,0.15); }
+    .search-result { font-size: 12px; color: #666; padding: 6px 2px 0; min-height: 18px; }
+    mark { background: #fde68a; color: inherit; padding: 0 1px; border-radius: 2px; }
+
     footer {
       text-align: center;
       padding: 20px;
@@ -176,6 +200,7 @@
       .summary-card .num { font-size: 18px; }
       .summary-card .label { font-size: 10px; }
       .container { padding: 0 8px; }
+      .search-bar { padding: 10px 8px 4px; }
       th, td { padding: 6px 6px; }
       th:nth-child(1) { width: 28px; }
       th:nth-child(2) { width: 32px; }
@@ -214,6 +239,11 @@
   </div>
 </div>
 
+<div class="search-bar">
+  <input type="search" id="searchInput" placeholder="이름으로 검색 (예: 홍길동)" autocomplete="off" />
+  <div class="search-result" id="searchResult"></div>
+</div>
+
 <div class="container" id="container">
   <div style="text-align:center;padding:40px 0;color:#999;">불러오는 중...</div>
 </div>
@@ -228,6 +258,24 @@ var DB_GROUPS = [
 ];
 
 function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ── 이름 검색 ── */
+var _query = '';
+var _lastData = null;
+
+function matches(s) { return !!_query && String(s == null ? '' : s).indexOf(_query) !== -1; }
+
+// esc() 후 검색어 부분을 <mark>로 감싸기
+function hl(s) {
+  var e = esc(s);
+  if (!_query) return e;
+  var q = esc(_query).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return e.replace(new RegExp(q, 'g'), '<mark>$&</mark>');
+}
+
+function sunMatches(sun) {
+  return matches(sun.l1) || matches(sun.l2) || sun.members.some(matches);
+}
 
 function personCount(sun) {
   var n = (sun.l1 ? 1 : 0) + (sun.l2 ? 1 : 0);
@@ -272,8 +320,8 @@ function applyOrgCounts(data) {
 
 function leaderCellHTML(sun) {
   if (!sun.l1 && !sun.l2) return '—';
-  var leader = '<span class="leader-name">' + esc(sun.l1) + '</span>';
-  var spouse = sun.l2 ? '<span class="spouse-name">, ' + esc(sun.l2) + '</span>' : '';
+  var leader = '<span class="leader-name">' + hl(sun.l1) + '</span>';
+  var spouse = sun.l2 ? '<span class="spouse-name">, ' + hl(sun.l2) + '</span>' : '';
   return leader + spouse;
 }
 
@@ -281,15 +329,17 @@ function membersCellHTML(sun) {
   return sun.members.map(function(m) {
     if (m.indexOf('(임시)') !== -1) {
       var base = m.replace('(임시)', '').trim();
-      return esc(base) + '<span class="temp">(임시)</span>';
+      return hl(base) + '<span class="temp">(임시)</span>';
     }
-    return esc(m);
+    return hl(m);
   }).join(' / ');
 }
 
 function render(data) {
+  _lastData = data;
   var container = document.getElementById('container');
   container.innerHTML = '';
+  var hitCount = 0;
 
   // 담당목사
   var pastorBlock = document.createElement('div');
@@ -298,11 +348,22 @@ function render(data) {
     '<div class="darakbang-title" style="background:linear-gradient(90deg,#1e3a5f,#2d5a8e);">담당목사</div>' +
     '<div class="sub-block" style="border-radius:0 0 8px 8px;">' +
       '<table><thead><tr><th>직분</th><th>이름</th></tr></thead>' +
-      '<tbody><tr><td class="순장">담당목사</td><td class="명단">' + esc(data.leadership.pastor) + '</td></tr></tbody></table>' +
+      '<tbody><tr><td class="순장">담당목사</td><td class="명단">' + hl(data.leadership.pastor) + '</td></tr></tbody></table>' +
     '</div>';
+  if (_query && !matches(data.leadership.pastor)) pastorBlock.style.display = 'none';
+  else if (_query) hitCount++;
   container.appendChild(pastorBlock);
 
   DB_GROUPS.forEach(function(g) {
+    // 검색 중이면 일치하는 순만 남김 (다락방장 이름만 일치하면 헤더만 표시)
+    var visibleSuns = {};
+    g.subs.forEach(function(subKey) {
+      var sub = data.darakbang[subKey];
+      visibleSuns[subKey] = !_query ? sub.suns : sub.suns.filter(sunMatches);
+      if (_query) hitCount += visibleSuns[subKey].length + (matches(sub.leaderName) ? 1 : 0);
+    });
+    if (_query && g.subs.every(function(k) { return !visibleSuns[k].length && !matches(data.darakbang[k].leaderName); })) return;
+
     var block = document.createElement('div');
     block.className = 'darakbang-block';
 
@@ -313,20 +374,22 @@ function render(data) {
 
     g.subs.forEach(function(subKey) {
       var sub = data.darakbang[subKey];
+      if (_query && !visibleSuns[subKey].length && !matches(sub.leaderName)) return;
       var subBlock = document.createElement('div');
       subBlock.className = 'sub-block';
       subBlock.innerHTML =
         '<div class="sub-header ' + g.cls + '-sub">' + esc(sub.label) +
           ' <span class="count-badge" style="background:rgba(0,0,0,0.06);color:#555;padding:1px 8px;border-radius:20px;font-size:11px;"><span data-ct-members="' + subKey + '"></span> · <span data-ct-sun="' + subKey + '"></span></span>' +
-          ' <span class="leader-tag">다락방장 ' + esc(sub.leaderName) + (sub.leaderRole ? ' ' + esc(sub.leaderRole) : '') + '</span>' +
+          ' <span class="leader-tag">다락방장 ' + hl(sub.leaderName) + (sub.leaderRole ? ' ' + esc(sub.leaderRole) : '') + '</span>' +
         '</div>' +
+        (!visibleSuns[subKey].length ? '' :
         '<table><thead><tr><th>순</th><th>인원</th><th>순장</th><th>순원</th></tr></thead><tbody>' +
-        sub.suns.map(function(sun) {
+        visibleSuns[subKey].map(function(sun) {
           return '<tr><td>' + sun.no + '</td><td>' + personCount(sun) + '</td>' +
             '<td class="순장">' + leaderCellHTML(sun) + '</td>' +
             '<td class="명단">' + membersCellHTML(sun) + '</td></tr>';
         }).join('') +
-        '</tbody></table>';
+        '</tbody></table>');
       block.appendChild(subBlock);
     });
 
@@ -334,6 +397,11 @@ function render(data) {
   });
 
   applyOrgCounts(data);
+
+  var resultEl = document.getElementById('searchResult');
+  if (!_query) resultEl.textContent = '';
+  else if (!hitCount) resultEl.textContent = '"' + _query + '"에 해당하는 이름이 없습니다.';
+  else resultEl.textContent = '"' + _query + '" 검색 결과 ' + hitCount + '건';
 
   var revisedDate = (data.meta && data.meta.revisedDateOrg) || '20261104'; // 최종수정일 (관리자 페이지에서 수정)
   var rev = '총무 ' + data.leadership.secGenName + ' · 최종수정 ' +
@@ -360,6 +428,11 @@ function loadAndRender() {
       if (_lastDataJSON === null) { _lastDataJSON = JSON.stringify(ORG_DATA_DEFAULT); render(ORG_DATA_DEFAULT); }
     });
 }
+
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  _query = e.target.value.replace(/\s+/g, '');
+  if (_lastData) render(_lastData);
+});
 
 loadAndRender();
 setInterval(loadAndRender, POLL_INTERVAL);

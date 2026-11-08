@@ -61,7 +61,42 @@
       margin-left: 16px; padding-left: 16px;
       border-left: 1px solid #eee;
     }
-    .arrow { text-align: center; color: #ccc; font-size: 18px; margin: -2px 0; }
+
+    /* ── 이름 검색 ── */
+    .search-bar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #f0f4f8;
+      padding: 12px 0 4px;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      background: white;
+      outline: none;
+    }
+    .search-bar input:focus { border-color: #2d5a8e; box-shadow: 0 0 0 3px rgba(45,90,142,0.15); }
+    .search-result { font-size: 12px; color: #666; padding: 6px 2px 0; min-height: 18px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .search-reset {
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e3a5f;
+      background: white;
+      border: 1px solid #c7d2e0;
+      border-radius: 20px;
+      padding: 3px 12px;
+      cursor: pointer;
+    }
+    .search-reset:hover { background: #e8eef6; }
+    mark { background: #fde68a; color: inherit; padding: 0 1px; border-radius: 2px; }
+    .sun-row.has-match { flex-wrap: wrap; }
+    .sun-match { order: 4; flex-basis: 100%; font-size: 11px; color: #555; white-space: normal; padding-left: 27px; }
 
     /* ════════════════════════════════
        다락방 구조 — 모바일 우선 설계
@@ -219,6 +254,11 @@
     </div>
   </div>
 
+  <div class="search-bar">
+    <input type="search" id="searchInput" placeholder="이름으로 검색 (예: 홍길동)" autocomplete="off" />
+    <div class="search-result" id="searchResult"></div>
+  </div>
+
   <div id="dynamicContent">
     <div style="text-align:center;padding:40px 0;color:#999;">불러오는 중...</div>
   </div>
@@ -238,6 +278,31 @@ var DB_GROUPS = [
 ];
 
 function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ── 이름 검색 ── */
+var _query = '';
+var _lastData = null;
+
+function matches(s) { return !!_query && String(s == null ? '' : s).indexOf(_query) !== -1; }
+
+// esc() 후 검색어 부분을 <mark>로 감싸기
+function hl(s) {
+  var e = esc(s);
+  if (!_query) return e;
+  var q = esc(_query).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return e.replace(new RegExp(q, 'g'), '<mark>$&</mark>');
+}
+
+// 순원(및 순장 배우자) 중 검색어가 들어간 이름만 뽑기 (조직도에는 순원이 안 보이므로 따로 표시)
+function matchedMembers(sun) {
+  var out = [];
+  [sun.l2].concat(sun.members.join(',').split(',')).forEach(function(n) {
+    n = String(n == null ? '' : n).replace('(임시)', '').trim();
+    if (n && matches(n)) out.push(n);
+  });
+  return out;
+}
+function sunMatches(sun) { return matches(sun.l1) || matchedMembers(sun).length > 0; }
 
 /* ── 순원 명단 기반 인원/순 개수 자동 집계 (community-totals.js 대체) ── */
 function personCount(sun) {
@@ -285,57 +350,75 @@ function sunRowHTML(sun) {
     return '<div class="sun-row empty"><span class="sun-num">' + String(sun.no).padStart(2,'0') + '</span><span class="sun-nm">—</span>' + count + '</div>';
   }
   var role = sun.l1role ? '<span class="sun-role-tag">' + esc(sun.l1role) + '</span>' : '';
-  return '<div class="sun-row"><span class="sun-num">' + String(sun.no).padStart(2,'0') + '</span><span class="sun-nm">' + esc(sun.l1) + '</span>' + count + '<span class="sun-badge">순장</span>' + role + '</div>';
+  var mm = matchedMembers(sun);
+  var extra = mm.length ? '<span class="sun-match">' + mm.map(hl).join(', ') + '</span>' : '';
+  return '<div class="sun-row' + (mm.length ? ' has-match' : '') + '"><span class="sun-num">' + String(sun.no).padStart(2,'0') + '</span><span class="sun-nm">' + hl(sun.l1) + '</span>' + count + '<span class="sun-badge">순장</span>' + role + extra + '</div>';
 }
 
 function render(data) {
+  _lastData = data;
   var el = document.getElementById('dynamicContent');
   var html = '';
+  var hitCount = 0;
+  // 검색 중이 아니면 항상 표시, 검색 중이면 일치하는 항목만 표시
+  function show(isMatch) { if (_query && isMatch) hitCount++; return !_query || isMatch; }
 
   // 리더십
-  html += '<div class="sec-title">리더십</div><div class="ldrs">';
-  html += '<div class="ldr pastor"><div class="ldr-role">담당목사</div><div><div class="ldr-name">' + esc(data.leadership.pastor) + '</div></div></div>';
-  html += '<div class="arrow">↓</div>';
-  html += '<div class="ldr elder"><div class="ldr-role">대표장로</div><div><div class="ldr-name">' + esc(data.leadership.repElder) + '</div></div></div>';
-  html += '<div class="arrow">↓</div>';
-  html += '<div class="ldr admin"><div class="ldr-role">총무</div><div><div class="ldr-name">' + esc(data.leadership.secGenName) + (data.leadership.secGenRole ? ' ' + esc(data.leadership.secGenRole) : '') + '</div></div>' +
-    '<div class="ldr-divider"><div style="font-size:10px;color:#888;font-weight:700;">부총무</div><div style="font-size:14px;font-weight:700;">' + esc(data.leadership.viceSecGenName) + (data.leadership.viceSecGenRole ? ' ' + esc(data.leadership.viceSecGenRole) : '') + '</div></div></div>';
-  html += '</div>';
+  var L = data.leadership;
+  var ldrHtml = '';
+  if (show(matches(L.pastor)))
+    ldrHtml += '<div class="ldr pastor"><div class="ldr-role">담당목사</div><div><div class="ldr-name">' + hl(L.pastor) + '</div></div></div>';
+  if (show(matches(L.repElder)))
+    ldrHtml += '<div class="ldr elder"><div class="ldr-role">대표장로</div><div><div class="ldr-name">' + hl(L.repElder) + '</div></div></div>';
+  if (show(matches(L.secGenName) || matches(L.viceSecGenName)))
+    ldrHtml += '<div class="ldr admin"><div class="ldr-role">총무</div><div><div class="ldr-name">' + hl(L.secGenName) + (L.secGenRole ? ' ' + esc(L.secGenRole) : '') + '</div></div>' +
+      '<div class="ldr-divider"><div style="font-size:10px;color:#888;font-weight:700;">부총무</div><div style="font-size:14px;font-weight:700;">' + hl(L.viceSecGenName) + (L.viceSecGenRole ? ' ' + esc(L.viceSecGenRole) : '') + '</div></div></div>';
+  if (ldrHtml) html += '<div class="sec-title">리더십</div><div class="ldrs">' + ldrHtml + '</div>';
 
   // 다락방
-  html += '<div class="sec-title">다락방</div>';
+  var dbHtml = '';
   DB_GROUPS.forEach(function(g) {
-    html += '<div class="db-block"><div class="db-hd ' + g.cls + '">' + g.key + ' 다락방 <span class="db-cnt"><span data-ct-members="GROUP:' + g.key + '"></span> · <span data-ct-sun="GROUP:' + g.key + '"></span></span></div><div class="db-body">';
+    var gHtml = '';
     g.subs.forEach(function(subKey) {
       var sub = data.darakbang[subKey];
-      html += '<div class="sub-hd ' + g.cls + '"><div class="sub-hd-top"><span class="sub-name">' + esc(sub.label) + '</span><span class="sub-cnt"><span data-ct-members="' + subKey + '"></span> · <span data-ct-sun="' + subKey + '"></span></span></div>' +
-        '<div class="sub-ldr">다락방장 ' + esc(sub.leaderName) + (sub.leaderRole ? ' ' + esc(sub.leaderRole) : '') + '</div></div>';
-      html += '<div class="sun-list">' + sub.suns.map(sunRowHTML).join('') + '</div>';
+      var suns = !_query ? sub.suns : sub.suns.filter(sunMatches);
+      if (_query) hitCount += suns.length;
+      if (!show(matches(sub.leaderName)) && !suns.length) return;
+      gHtml += '<div class="sub-hd ' + g.cls + '"><div class="sub-hd-top"><span class="sub-name">' + esc(sub.label) + '</span><span class="sub-cnt"><span data-ct-members="' + subKey + '"></span> · <span data-ct-sun="' + subKey + '"></span></span></div>' +
+        '<div class="sub-ldr">다락방장 ' + hl(sub.leaderName) + (sub.leaderRole ? ' ' + esc(sub.leaderRole) : '') + '</div></div>';
+      if (suns.length) gHtml += '<div class="sun-list">' + suns.map(sunRowHTML).join('') + '</div>';
     });
-    html += '</div></div>';
+    if (gHtml) dbHtml += '<div class="db-block"><div class="db-hd ' + g.cls + '">' + g.key + ' 다락방 <span class="db-cnt"><span data-ct-members="GROUP:' + g.key + '"></span> · <span data-ct-sun="GROUP:' + g.key + '"></span></span></div><div class="db-body">' + gHtml + '</div></div>';
   });
+  if (dbHtml) html += '<div class="sec-title">다락방</div>' + dbHtml;
 
   // 장로
-  html += '<div class="sec-title">장로</div>';
-  html += '<div class="elder-group"><div class="elder-gh simu">시무장로</div><div class="elder-gb">' +
-    data.elders.simu.map(function(n) { return '<div class="elder-card"><div class="e-role">시무장로</div><div class="e-name">' + esc(n) + '</div></div>'; }).join('') +
+  var simu = data.elders.simu.filter(function(n) { return show(matches(n)); });
+  var sayk = data.elders.sayk.filter(function(n) { return show(matches(n)); });
+  if (simu.length || sayk.length) html += '<div class="sec-title">장로</div>';
+  if (simu.length) html += '<div class="elder-group"><div class="elder-gh simu">시무장로</div><div class="elder-gb">' +
+    simu.map(function(n) { return '<div class="elder-card"><div class="e-role">시무장로</div><div class="e-name">' + hl(n) + '</div></div>'; }).join('') +
     '</div></div>';
-  html += '<div class="elder-group"><div class="elder-gh sayk">사역장로</div><div class="elder-gb">' +
-    data.elders.sayk.map(function(n) { return '<div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">' + esc(n) + '</div></div>'; }).join('') +
+  if (sayk.length) html += '<div class="elder-group"><div class="elder-gh sayk">사역장로</div><div class="elder-gb">' +
+    sayk.map(function(n) { return '<div class="elder-card"><div class="e-role">사역장로</div><div class="e-name">' + hl(n) + '</div></div>'; }).join('') +
     '</div></div>';
 
   // 사역 담당
-  html += '<div class="sec-title">사역 담당</div><div class="ministry-grid" style="margin-bottom:4px;">' +
-    data.ministries.map(function(m) {
-      return '<div class="mc"><div class="mt">' + esc(m.title) + '</div><div class="mn">' + m.names.map(esc).join('<br>') + '</div></div>';
+  var mins = data.ministries.filter(function(m) { return show(m.names.some(matches)); });
+  if (mins.length) html += '<div class="sec-title">사역 담당</div><div class="ministry-grid" style="margin-bottom:4px;">' +
+    mins.map(function(m) {
+      return '<div class="mc"><div class="mt">' + esc(m.title) + '</div><div class="mn">' + m.names.map(hl).join('<br>') + '</div></div>';
     }).join('') +
     '</div>';
 
-  // 후원선교사
-  html += '<div class="sec-title">후원선교사</div><div class="mission-grid">' +
-    data.missionaries.map(function(m, i) {
-      return '<div class="msc"><div class="mr">' + esc(m.region) + '</div><div class="mn">' + esc(m.name) + '</div>' +
-        '<div class="ms">써포터: ' + esc(m.supporter) + '</div><div class="ms-pray" data-miss="m' + i + '"></div></div>';
+  // 후원선교사 (기도제목 저장 키가 순서 번호라서 원래 인덱스 유지)
+  var miss = [];
+  data.missionaries.forEach(function(m, i) { if (show(matches(m.name) || matches(m.supporter))) miss.push({ m: m, i: i }); });
+  if (miss.length) html += '<div class="sec-title">후원선교사</div><div class="mission-grid">' +
+    miss.map(function(x) {
+      var m = x.m;
+      return '<div class="msc"><div class="mr">' + esc(m.region) + '</div><div class="mn">' + hl(m.name) + '</div>' +
+        '<div class="ms">써포터: ' + hl(m.supporter) + '</div><div class="ms-pray" data-miss="m' + x.i + '"></div></div>';
     }).join('') +
     '</div>';
 
@@ -343,6 +426,13 @@ function render(data) {
 
   applyOrgCounts(data);
   initMissionPray();
+
+  var resultEl = document.getElementById('searchResult');
+  if (!_query) resultEl.innerHTML = '';
+  else resultEl.innerHTML = '<span>' + (hitCount
+      ? '"' + esc(_query) + '" 검색 결과 ' + hitCount + '건'
+      : '"' + esc(_query) + '"에 해당하는 이름이 없습니다.') + '</span>' +
+    '<button type="button" class="search-reset" onclick="resetSearch()">← 전체 조직도 보기</button>';
 
   var revisedDate = (data.meta && data.meta.revisedDateChart) || '20261104'; // 최종수정일 (관리자 페이지에서 수정)
   var rev = '총무 ' + data.leadership.secGenName + ' 개정 ' + revisedDate;
@@ -415,6 +505,33 @@ function loadAndRender() {
       if (_lastDataJSON === null) { _lastDataJSON = JSON.stringify(ORG_DATA_DEFAULT); render(ORG_DATA_DEFAULT); }
     });
 }
+
+function setQuery(q) {
+  _query = q;
+  if (_lastData) render(_lastData);
+}
+
+// 검색 시작 시 기록을 하나 쌓아서, 휴대폰 뒤로가기로 검색 전 화면으로 돌아갈 수 있게 함
+function inSearchState() { return !!(history.state && history.state.search); }
+
+function resetSearch() {
+  document.getElementById('searchInput').value = '';
+  setQuery('');
+  if (inSearchState()) history.back();
+}
+
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  var q = e.target.value.replace(/\s+/g, '');
+  if (q && !inSearchState()) { try { history.pushState({ search: true }, ''); } catch (err) {} }
+  setQuery(q);
+  if (!q && inSearchState()) history.back();
+});
+
+window.addEventListener('popstate', function() {
+  if (inSearchState()) return;
+  document.getElementById('searchInput').value = '';
+  setQuery('');
+});
 
 loadAndRender();
 setInterval(loadAndRender, POLL_INTERVAL);
